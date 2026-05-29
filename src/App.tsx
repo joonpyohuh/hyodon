@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { RotateCcw, Volume2 } from "lucide-react";
 import ChildPhone from "./components/ChildPhone";
 import DemoControls from "./components/DemoControls";
 import PhoneFrame from "./components/PhoneFrame";
@@ -70,6 +71,7 @@ const isAnomaly = (merchant: Pick<Merchant, "amount" | "type">) =>
 
 function App() {
   const [state, setState] = useState<AppState>(() => createInitialState());
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
 
   const heroStats = useMemo(
     () => [
@@ -79,6 +81,10 @@ function App() {
     ],
     [state.balance, state.pendingApproval, state.threshold],
   );
+
+  const say = (message: string) => {
+    if (voiceEnabled) speakKorean(message);
+  };
 
   const addActivity = (
     activity: Omit<Activity, "id" | "ts">,
@@ -110,9 +116,7 @@ function App() {
 
   const selectScenario = (merchantId: string) => {
     const merchant = merchants.find((item) => item.id === merchantId);
-
-    if (!merchant) return;
-    selectMerchant(merchant);
+    if (merchant) selectMerchant(merchant);
   };
 
   const startPayment = () => {
@@ -227,9 +231,7 @@ function App() {
       };
     });
 
-    if (speechMessage) {
-      speakKorean(speechMessage);
-    }
+    if (speechMessage) say(speechMessage);
   };
 
   const cancelConfirm = () => {
@@ -284,9 +286,7 @@ function App() {
       };
     });
 
-    if (speechMessage) {
-      speakKorean(speechMessage);
-    }
+    if (speechMessage) say(speechMessage);
   };
 
   const declinePending = () => {
@@ -333,14 +333,12 @@ function App() {
       };
     });
 
-    if (speechMessage) {
-      speakKorean(speechMessage);
-    }
+    if (speechMessage) say(speechMessage);
   };
 
-  const adjustThreshold = (delta: number) => {
+  const setThreshold = (nextThreshold: number) => {
     setState((current) => {
-      const threshold = Math.min(500000, Math.max(50000, current.threshold + delta));
+      const threshold = Math.min(500000, Math.max(50000, nextThreshold));
       const activity = addActivity({
         title: "기준 금액 변경",
         description: `${formatWon(threshold)} 이상 확인`,
@@ -353,6 +351,10 @@ function App() {
         activities: [activity, ...current.activities],
       };
     });
+  };
+
+  const adjustThreshold = (delta: number) => {
+    setThreshold(state.threshold + delta);
   };
 
   const toggleFrozen = () => {
@@ -385,75 +387,123 @@ function App() {
   };
 
   return (
-    <main className="min-h-screen px-5 py-6 sm:px-8 lg:px-10">
-      <section className="mx-auto max-w-6xl text-center">
-        <p className="text-[15px] font-extrabold text-sage">효돈 Hyo-Don</p>
-        <h1 className="mt-2 text-[40px] font-black leading-tight text-ink sm:text-[48px]">
-          소액은 자유롭게, 고액만 자녀가.
-        </h1>
-        <p className="mx-auto mt-3 max-w-3xl text-[18px] font-semibold leading-relaxed text-muted sm:text-[19px]">
-          시니어의 일상은 지키고, 고액 사기는 가족이 막는 차등 승인 결제 서비스
-        </p>
-
-        <div className="mx-auto mt-5 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
-          {heroStats.map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-[22px] border border-white/80 bg-white/82 px-4 py-3 shadow-sm backdrop-blur"
-            >
-              <p className="text-[13px] font-bold text-muted">{stat.label}</p>
-              <p className="mt-1 text-[18px] font-black text-ink">{stat.value}</p>
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/86 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sage text-[17px] font-black text-white shadow-sm">
+              효
             </div>
-          ))}
-        </div>
-
-        <DemoControls
-          merchants={merchants}
-          onSelectScenario={selectScenario}
-          onReset={resetDemo}
-        />
-      </section>
-
-      <section className="mx-auto mt-7 flex max-w-6xl flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
-        <PhoneFrame title="시니어 앱" subtitle="김순자님 · 72세">
-          <SeniorPhone
-            state={state}
-            merchants={merchants}
-            onSelectMerchant={selectMerchant}
-            onStartPayment={startPayment}
-            onConfirmPayment={confirmPayment}
-            onCancelConfirm={cancelConfirm}
-            onReturnHome={returnHome}
-          />
-        </PhoneFrame>
-
-        <div className="hidden min-h-[660px] w-[70px] flex-col items-center justify-center lg:flex">
-          <div className="h-2 w-2 rounded-full bg-sage" />
-          <div className="my-3 h-32 w-px bg-sage/25" />
-          <div
-            className={`rounded-full px-3 py-2 text-center text-[12px] font-black ${
-              state.pendingApproval
-                ? "bg-gold/12 text-gold"
-                : "bg-sage/10 text-sage"
-            }`}
-          >
-            {state.pendingApproval ? "승인 요청" : "실시간 연결"}
+            <div>
+              <p className="text-[17px] font-black leading-tight text-ink">
+                효돈 <span className="text-muted">Hyo-Don</span>
+              </p>
+              <p className="text-[12px] font-bold leading-tight text-muted">
+                소액은 자유롭게, 고액만 자녀가.
+              </p>
+            </div>
           </div>
-          <div className="my-3 h-32 w-px bg-sage/25" />
-          <div className="h-2 w-2 rounded-full bg-sage" />
-        </div>
 
-        <PhoneFrame title="자녀 앱" subtitle="이지현님 · 42세">
-          <ChildPhone
-            state={state}
-            onApprove={approvePending}
-            onDecline={declinePending}
-            onAdjustThreshold={adjustThreshold}
-            onToggleFrozen={toggleFrozen}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-pressed={voiceEnabled}
+              onClick={() => setVoiceEnabled((current) => !current)}
+              className={`inline-flex h-10 items-center gap-2 rounded-full px-3.5 text-[13px] font-black transition ${
+                voiceEnabled ? "bg-sage/12 text-sage" : "bg-white text-muted"
+              }`}
+            >
+              <Volume2 size={16} strokeWidth={2.4} />
+              {voiceEnabled ? "음성 켜짐" : "음성 꺼짐"}
+            </button>
+            <button
+              type="button"
+              onClick={resetDemo}
+              className="inline-flex h-10 items-center gap-2 rounded-full bg-ink px-3.5 text-[13px] font-black text-white transition active:scale-[0.98]"
+            >
+              <RotateCcw size={15} strokeWidth={2.6} />
+              초기화
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="px-5 py-5 sm:px-8 lg:px-10">
+        <section className="mx-auto max-w-6xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="inline-flex rounded-full bg-gold/12 px-3 py-1 text-[12px] font-black text-gold">
+              차등 승인 결제 · 인터랙티브 데모
+            </span>
+            <h1 className="mt-2 text-[36px] font-black leading-tight text-ink sm:text-[46px]">
+              소액은 자유롭게, 고액만 자녀가.
+            </h1>
+            <p className="mx-auto mt-2 max-w-2xl text-[16px] font-semibold leading-relaxed text-muted sm:text-[18px]">
+              시니어의 일상은 지키고, 고액 사기는 가족이 막는 차등 승인 결제 서비스
+            </p>
+          </div>
+
+          <div className="mx-auto mt-4 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
+            {heroStats.map((stat) => (
+              <div
+                key={stat.label}
+                className="rounded-[22px] border border-white/90 bg-white/75 px-4 py-3 text-center shadow-sm backdrop-blur"
+              >
+                <p className="text-[13px] font-black text-muted">{stat.label}</p>
+                <p className="mt-1 text-[18px] font-black text-ink">{stat.value}</p>
+              </div>
+            ))}
+          </div>
+
+          <DemoControls
+            merchants={merchants}
+            selectedMerchant={state.selectedMerchant}
+            onSelectScenario={selectScenario}
+            onReset={resetDemo}
           />
-        </PhoneFrame>
-      </section>
-    </main>
+        </section>
+
+        <section className="mx-auto mt-5 flex max-w-6xl flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
+          <PhoneFrame title="시니어 앱" subtitle="김순자님 · 72세" accent="sage">
+            <SeniorPhone
+              state={state}
+              merchants={merchants}
+              onSelectMerchant={selectMerchant}
+              onStartPayment={startPayment}
+              onConfirmPayment={confirmPayment}
+              onCancelConfirm={cancelConfirm}
+              onReturnHome={returnHome}
+            />
+          </PhoneFrame>
+
+          <div className="hidden min-h-[600px] w-[72px] flex-col items-center justify-center lg:flex">
+            <div className="h-2 w-2 rounded-full bg-sage" />
+            <div className="my-3 h-28 w-px bg-sage/25" />
+            <div
+              className={`rounded-full px-3 py-2 text-center text-[12px] font-black shadow-sm ${
+                state.pendingApproval
+                  ? "bg-gold/12 text-gold"
+                  : "bg-sage/10 text-sage"
+              }`}
+            >
+              {state.pendingApproval ? "승인 요청" : "실시간 연결"}
+            </div>
+            <div className="my-3 h-28 w-px bg-sage/25" />
+            <div className="h-2 w-2 rounded-full bg-sage" />
+          </div>
+
+          <PhoneFrame title="자녀 앱" subtitle="이지현님 · 42세" accent="toss">
+            <ChildPhone
+              state={state}
+              onApprove={approvePending}
+              onDecline={declinePending}
+              onAdjustThreshold={adjustThreshold}
+              onSetThreshold={setThreshold}
+              onToggleFrozen={toggleFrozen}
+            />
+          </PhoneFrame>
+        </section>
+      </main>
+    </div>
   );
 }
 

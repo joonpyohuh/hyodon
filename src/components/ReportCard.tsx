@@ -9,21 +9,21 @@ const reportRows = [
 
 export default function ReportCard() {
   return (
-    <section className="rounded-[28px] bg-white p-5 shadow-card">
+    <section className="rounded-[28px] bg-white p-5 shadow-[0_12px_30px_-18px_rgba(33,31,26,0.35)]">
       <div className="flex items-center gap-3">
         <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-soft text-sage">
           <BarChart3 size={21} strokeWidth={2.3} />
         </span>
         <div>
-          <p className="text-[17px] font-extrabold text-ink">이번 달 리포트</p>
-          <p className="text-[13px] font-semibold text-muted">정기 사용 패턴</p>
+          <p className="text-[17px] font-black text-ink">이번 달 리포트</p>
+          <p className="text-[13px] font-bold text-muted">정기 사용 패턴</p>
         </div>
       </div>
 
-      <p className="mt-5 text-[30px] font-black tracking-normal text-ink">
+      <p className="mt-5 text-[30px] font-black leading-none text-ink">
         {formatWon(142000)}
       </p>
-      <p className="text-[14px] font-semibold text-muted">이번 달 사용</p>
+      <p className="mt-1 text-[14px] font-bold text-muted">이번 달 사용</p>
 
       <div className="mt-5 grid gap-3">
         {reportRows.map((row) => (
@@ -32,7 +32,7 @@ export default function ReportCard() {
             <span className="flex-1 text-[14px] font-bold text-muted">
               {row.label}
             </span>
-            <span className="text-[14px] font-extrabold text-ink">
+            <span className="text-[14px] font-black text-ink">
               {formatWon(row.amount)}
             </span>
           </div>

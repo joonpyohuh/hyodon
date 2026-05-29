@@ -4,6 +4,7 @@
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html {
@@ -17,10 +18,13 @@ body {
   margin: 0;
   color: #191f28;
   background:
-    radial-gradient(circle at 18% 10%, rgba(81, 104, 90, 0.10), transparent 28rem),
-    linear-gradient(135deg, #f8f5ee 0%, #f7f8fa 56%, #eef4f1 100%);
+    radial-gradient(circle at 16% 8%, rgba(81, 104, 90, 0.12), transparent 28rem),
+    radial-gradient(circle at 84% 12%, rgba(49, 130, 246, 0.08), transparent 24rem),
+    linear-gradient(135deg, #f8f5ee 0%, #f7f8fa 58%, #eef4f1 100%);
   font-family: Pretendard, Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 button,
@@ -29,7 +33,11 @@ input {
 }
 
 button {
-  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
 
 .phone-scroll {
@@ -67,4 +75,71 @@ button {
 
 .loading-dot:nth-child(3) {
   animation-delay: 0.32s;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  60% {
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(176, 134, 66, 0.48);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 18px rgba(176, 134, 66, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(176, 134, 66, 0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-pop {
+  animation: pop 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 1.8s ease-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.42s cubic-bezier(0.16, 1, 0.3, 1);
 }

@@ -21,7 +21,7 @@ export default function MerchantSelector({
   onSelect,
 }: MerchantSelectorProps) {
   return (
-    <div className="grid gap-3">
+    <div className="grid grid-cols-2 gap-2.5">
       {merchants.map((merchant) => {
         const Icon = iconByType[merchant.type];
         const selected = selectedMerchant?.id === merchant.id;
@@ -30,35 +30,29 @@ export default function MerchantSelector({
           <button
             key={merchant.id}
             type="button"
-            className={`rounded-[24px] border bg-white p-4 text-left shadow-sm transition ${
+            className={`min-h-[104px] rounded-[22px] border-2 bg-white p-3 text-left shadow-sm transition active:scale-[0.98] ${
               selected
-                ? "border-sage ring-4 ring-sage/10"
-                : "border-line hover:border-sage/30"
+                ? "border-sage shadow-[0_14px_28px_-18px_rgba(81,104,90,0.55)]"
+                : "border-line hover:border-sage/35"
             }`}
             onClick={() => onSelect(merchant)}
           >
-            <div className="flex items-start gap-3">
-              <span
-                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-                  selected ? "bg-sage text-white" : "bg-soft text-sage"
-                }`}
-              >
-                <Icon size={23} strokeWidth={2.2} />
+            <span
+              className={`flex h-9 w-9 items-center justify-center rounded-2xl ${
+                selected ? "bg-sage text-white" : "bg-soft text-sage"
+              }`}
+            >
+                <Icon size={20} strokeWidth={2.3} />
               </span>
-              <span className="min-w-0 flex-1">
-                <span className="flex items-center justify-between gap-3">
-                  <strong className="text-[19px] leading-tight text-ink">
-                    {merchant.name}
-                  </strong>
-                  <span className="shrink-0 text-[17px] font-extrabold text-ink">
-                    {formatWon(merchant.amount)}
-                  </span>
-                </span>
-                <span className="mt-1 block text-[14px] font-semibold text-muted">
-                  {merchant.expected}
-                </span>
-              </span>
-            </div>
+            <strong className="mt-2 block text-[16px] leading-tight text-ink">
+              {merchant.name}
+            </strong>
+            <span className="mt-1 block text-[14px] font-black text-ink">
+              {formatWon(merchant.amount)}
+            </span>
+            <span className="mt-1 block text-[12px] font-bold leading-snug text-muted">
+              {merchant.expected}
+            </span>
           </button>
         );
       })}
