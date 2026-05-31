@@ -57,6 +57,7 @@ const createInitialState = (): AppState => ({
   balance: INITIAL_BALANCE,
   cardFrozen: false,
   selectedMerchant: merchants[0],
+  selectedPaymentMethod: null,
   pendingApproval: null,
   transactions: [],
   activities: [],
@@ -108,6 +109,7 @@ function App() {
     setState((current) => ({
       ...current,
       selectedMerchant: merchant,
+      selectedPaymentMethod: null,
       pendingApproval: null,
       seniorScreen: "home",
       lastPayment: null,
@@ -126,10 +128,18 @@ function App() {
       return {
         ...current,
         pendingApproval: null,
-        seniorScreen: "confirm",
+        seniorScreen: "method",
         lastPayment: null,
       };
     });
+  };
+
+  const selectPaymentMethod = (paymentMethod: AppState["selectedPaymentMethod"]) => {
+    setState((current) => ({
+      ...current,
+      selectedPaymentMethod: paymentMethod,
+      seniorScreen: "confirm",
+    }));
   };
 
   const confirmPayment = () => {
@@ -238,6 +248,7 @@ function App() {
     setState((current) => ({
       ...current,
       seniorScreen: "home",
+      selectedPaymentMethod: null,
     }));
   };
 
@@ -379,6 +390,7 @@ function App() {
       ...current,
       seniorScreen: "home",
       lastPayment: null,
+      selectedPaymentMethod: null,
     }));
   };
 
@@ -469,6 +481,7 @@ function App() {
               merchants={merchants}
               onSelectMerchant={selectMerchant}
               onStartPayment={startPayment}
+              onSelectPaymentMethod={selectPaymentMethod}
               onConfirmPayment={confirmPayment}
               onCancelConfirm={cancelConfirm}
               onReturnHome={returnHome}

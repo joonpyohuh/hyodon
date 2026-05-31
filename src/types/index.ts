@@ -1,6 +1,14 @@
 export type MerchantType = "grocery" | "medical" | "retail" | "ATM_이체";
 
-export type SeniorScreen = "home" | "confirm" | "waiting" | "done" | "declined";
+export type SeniorScreen =
+  | "home"
+  | "method"
+  | "confirm"
+  | "waiting"
+  | "done"
+  | "declined";
+
+export type PaymentMethodId = "simple" | "card" | "qr";
 
 export type TransactionStatus = "approved" | "declined" | "pending";
 
@@ -53,6 +61,7 @@ export interface AppState {
   balance: number;
   cardFrozen: boolean;
   selectedMerchant: Merchant | null;
+  selectedPaymentMethod: PaymentMethodId | null;
   pendingApproval: PendingApproval | null;
   transactions: Transaction[];
   activities: Activity[];

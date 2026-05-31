@@ -3,11 +3,13 @@ import {
   ArrowLeft,
   CheckCircle2,
   CreditCard,
+  QrCode,
   ShieldCheck,
+  Smartphone,
 } from "lucide-react";
 import MerchantSelector from "./MerchantSelector";
 import TransactionList from "./TransactionList";
-import type { AppState, Merchant } from "../types";
+import type { AppState, Merchant, PaymentMethodId } from "../types";
 import { formatWon } from "../utils/format";
 
 interface SeniorPhoneProps {
@@ -15,25 +17,133 @@ interface SeniorPhoneProps {
   merchants: Merchant[];
   onSelectMerchant: (merchant: Merchant) => void;
   onStartPayment: () => void;
+  onSelectPaymentMethod: (method: PaymentMethodId) => void;
   onConfirmPayment: () => void;
   onCancelConfirm: () => void;
   onReturnHome: () => void;
 }
+
+const paymentMethods: Array<{
+  id: PaymentMethodId;
+  title: string;
+  description: string;
+  icon: typeof Smartphone;
+  iconClass: string;
+  barClass: string;
+}> = [
+  {
+    id: "simple",
+    title: "간편결제",
+    description: "큰 버튼으로 바로 결제해요",
+    icon: Smartphone,
+    iconClass: "bg-sage/12 text-sage",
+    barClass: "bg-sage",
+  },
+  {
+    id: "card",
+    title: "안심카드",
+    description: "매장에서 카드를 찍는 상황이에요",
+    icon: CreditCard,
+    iconClass: "bg-gold/14 text-gold",
+    barClass: "bg-gold",
+  },
+  {
+    id: "qr",
+    title: "QR결제",
+    description: "QR을 보여주거나 스캔해요",
+    icon: QrCode,
+    iconClass: "bg-toss/10 text-toss",
+    barClass: "bg-toss",
+  },
+];
 
 export default function SeniorPhone({
   state,
   merchants,
   onSelectMerchant,
   onStartPayment,
+  onSelectPaymentMethod,
   onConfirmPayment,
   onCancelConfirm,
   onReturnHome,
 }: SeniorPhoneProps) {
   const { selectedMerchant, seniorScreen, lastPayment } = state;
 
+  const selectedPaymentMethod = paymentMethods.find(
+    (method) => method.id === state.selectedPaymentMethod,
+  );
+  const SelectedPaymentIcon = selectedPaymentMethod?.icon;
+
+  if (seniorScreen === "method" && selectedMerchant) {
+    return (
+      <div className="flex min-h-full flex-col bg-paper px-5 pb-7 pt-5 animate-page-swipe">
+        <button
+          type="button"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-ink shadow-sm transition active:scale-[0.96]"
+          onClick={onCancelConfirm}
+          aria-label="뒤로 가기"
+        >
+          <ArrowLeft size={24} strokeWidth={2.4} />
+        </button>
+
+        <div className="mt-7">
+          <p className="text-[18px] font-bold text-muted">결제 방법을 골라주세요</p>
+          <h3 className="mt-2 text-[29px] font-black leading-tight text-ink">
+            {selectedMerchant.name}
+            <br />
+            {formatWon(selectedMerchant.amount)}
+          </h3>
+        </div>
+
+        <div className="mt-7 grid gap-3">
+          {paymentMethods.map((method, index) => {
+            const Icon = method.icon;
+
+            return (
+              <button
+                key={method.id}
+                type="button"
+                className={`method-card method-card-${index} group relative overflow-hidden rounded-[28px] border-2 border-white bg-white p-5 text-left shadow-card transition active:scale-[0.98]`}
+                onClick={() => onSelectPaymentMethod(method.id)}
+              >
+                <span
+                  className={`absolute inset-y-0 left-0 w-1.5 ${method.barClass}`}
+                />
+                <div className="flex items-center gap-4">
+                  <span
+                    className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] ${method.iconClass}`}
+                  >
+                    <Icon size={29} strokeWidth={2.25} />
+                    {method.id === "qr" ? <span className="qr-scan-line" /> : null}
+                    {method.id === "card" ? <span className="tap-wave" /> : null}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <strong className="block text-[21px] font-black text-ink">
+                      {method.title}
+                    </strong>
+                    <span className="mt-1 block text-[14px] font-bold leading-relaxed text-muted">
+                      {method.description}
+                    </span>
+                  </span>
+                  <span className="text-[24px] text-muted transition group-active:translate-x-1">
+                    →
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-auto rounded-[22px] bg-sage/10 px-4 py-3 text-[14px] font-bold leading-relaxed text-sage animate-soft-glow">
+          어떤 방법을 골라도 금액 기준에 따라 소액은 바로 통과하고, 고액은 자녀 확인으로 넘어가요.
+        </div>
+      </div>
+    );
+  }
+
   if (seniorScreen === "confirm" && selectedMerchant) {
     return (
-      <div className="flex min-h-full flex-col bg-paper px-5 pb-7 pt-5 animate-rise">
+      <div className="flex min-h-full flex-col bg-paper px-5 pb-7 pt-5 animate-page-zoom">
         <button
           type="button"
           className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-ink shadow-sm"
@@ -44,9 +154,18 @@ export default function SeniorPhone({
         </button>
 
         <div className="flex flex-1 flex-col items-center justify-center text-center">
-          <div className="flex h-24 w-24 items-center justify-center rounded-[30px] bg-white text-sage shadow-[0_12px_30px_-14px_rgba(33,31,26,0.4)]">
-            <CreditCard size={48} strokeWidth={2.1} />
+          <div className="flex h-24 w-24 items-center justify-center rounded-[30px] bg-white text-sage shadow-[0_12px_30px_-14px_rgba(33,31,26,0.4)] animate-float">
+            {SelectedPaymentIcon ? (
+              <SelectedPaymentIcon size={48} strokeWidth={2.1} />
+            ) : (
+              <CreditCard size={48} strokeWidth={2.1} />
+            )}
           </div>
+          {selectedPaymentMethod ? (
+            <p className="mt-6 rounded-full bg-sage/10 px-4 py-2 text-[15px] font-black text-sage">
+              {selectedPaymentMethod.title}
+            </p>
+          ) : null}
           <p className="mt-8 text-[23px] font-bold text-muted">
             {selectedMerchant.name}에서
           </p>
