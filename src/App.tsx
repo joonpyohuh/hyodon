@@ -18,7 +18,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 
-type DemoStep = 0 | 1 | 2 | 3 | 4 | 5;
+type DemoStep = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 const steps: Array<{
   id: DemoStep;
@@ -28,39 +28,45 @@ const steps: Array<{
 }> = [
   {
     id: 0,
+    eyebrow: "00 Everyday autonomy",
+    title: "소액 결제는 그대로 지나갑니다",
+    meaning: "효돈은 부모님의 일상을 불필요하게 확인하지 않습니다.",
+  },
+  {
+    id: 1,
     eyebrow: "01 Transfer attempt",
     title: "부모님이 송금을 누르기 직전",
     meaning: "사기는 평범한 송금 화면에서 시작됩니다.",
   },
   {
-    id: 1,
+    id: 2,
     eyebrow: "02 Hyodon detection",
     title: "효돈이 평소와 다름을 감지",
     meaning: "은행 앱은 송금만 처리하지만, 효돈은 맥락을 봅니다.",
   },
   {
-    id: 2,
+    id: 3,
     eyebrow: "03 Family alert",
     title: "가족에게 즉시 연결",
     meaning: "부모님의 모든 결제가 아니라, 위험한 순간만 알려줍니다.",
   },
   {
-    id: 3,
+    id: 4,
     eyebrow: "04 Conversation",
     title: "가족이 함께 확인",
     meaning: "통제가 아니라 대화로 위험을 멈춥니다.",
   },
   {
-    id: 4,
+    id: 5,
     eyebrow: "05 Resolution",
     title: "거절이 아닌 보류",
     meaning: "자존감을 해치지 않는 언어로 피해를 막습니다.",
   },
   {
-    id: 5,
-    eyebrow: "06 Why it matters",
-    title: "부모님의 선택을 지키는 기술",
-    meaning: "효돈은 금융 보호와 자율성을 함께 설계합니다.",
+    id: 6,
+    eyebrow: "06 Result",
+    title: "일상은 그대로, 위험만 멈춤",
+    meaning: "작은 결제는 자유롭게 지나가고, 의심 송금은 가족과 확인합니다.",
   },
 ];
 
@@ -85,14 +91,14 @@ function App() {
     if (!autoPlay) return undefined;
 
     const timer = window.setTimeout(() => {
-      setStep((current) => (current === 5 ? 0 : ((current + 1) as DemoStep)));
-    }, step === 5 ? 5200 : 3900);
+      setStep((current) => (current === 6 ? 0 : ((current + 1) as DemoStep)));
+    }, step === 6 ? 4200 : 3900);
 
     return () => window.clearTimeout(timer);
   }, [autoPlay, step]);
 
   useEffect(() => {
-    if (step !== 5) {
+    if (step !== 6) {
       setEndingLine(0);
       return undefined;
     }
@@ -101,7 +107,7 @@ function App() {
     return () => window.clearTimeout(timer);
   }, [step]);
 
-  const nextStep = () => setStep((current) => (current === 5 ? 5 : ((current + 1) as DemoStep)));
+  const nextStep = () => setStep((current) => (current === 6 ? 6 : ((current + 1) as DemoStep)));
   const prevStep = () => setStep((current) => (current === 0 ? 0 : ((current - 1) as DemoStep)));
   const reset = () => {
     setAutoPlay(false);
@@ -109,12 +115,13 @@ function App() {
   };
 
   const storyCopy = useMemo(() => {
-    if (step === 0) return "기존 은행 앱이라면 여기서 송금은 그대로 진행됩니다.";
-    if (step === 1) return "효돈은 금액, 수취인, 문맥을 함께 보고 위험도를 계산합니다.";
-    if (step === 2) return "부모님의 일상 결제는 조용히 지나가고, 위험한 송금만 가족에게 도착합니다.";
-    if (step === 3) return "가족은 버튼 하나로 전화하고, 대화의 핵심만 확인합니다.";
-    if (step === 4) return "부모님 화면에는 ‘거절’이 아니라 ‘잠시 보류’로 표시됩니다.";
-    return "보호는 통제가 아니라, 선택권을 지켜주는 설계입니다.";
+    if (step === 0) return "행복마트 35,000원. 가족에게 알림 없이 바로 승인됩니다.";
+    if (step === 1) return "기존 은행 앱이라면 여기서 송금은 그대로 진행됩니다.";
+    if (step === 2) return "효돈은 금액, 수취인, 문맥을 함께 보고 위험도를 계산합니다.";
+    if (step === 3) return "부모님의 일상 결제는 조용히 지나가고, 위험한 송금만 가족에게 도착합니다.";
+    if (step === 4) return "가족은 버튼 하나로 전화하고, 대화의 핵심만 확인합니다.";
+    if (step === 5) return "부모님 화면에는 ‘거절’이 아니라 ‘잠시 보류’로 표시됩니다.";
+    return "효돈은 모든 결제를 확인하지 않습니다. 필요한 순간에만 멈춥니다.";
   }, [step]);
 
   return (
@@ -206,15 +213,15 @@ function App() {
             <section className="order-1 lg:order-2">
               <div
                 className={`relative mx-auto grid max-w-[780px] items-center gap-5 transition-all duration-700 ${
-                  step === 5 ? "lg:grid-cols-1" : "sm:grid-cols-[1fr_88px_1fr]"
+                  step === 6 ? "lg:grid-cols-1" : "sm:grid-cols-[1fr_88px_1fr]"
                 }`}
               >
-                {step === 5 ? (
+                {step === 6 ? (
                   <EndingScene endingLine={endingLine} />
                 ) : (
                   <>
                     <PhoneShell label="Senior app" name="김순자님 · 72세">
-                      <SeniorStory step={step} onTransfer={() => setStep(1)} />
+                      <SeniorStory step={step} onTransfer={() => setStep(2)} />
                     </PhoneShell>
 
                     <InterventionRail step={step} />
@@ -258,11 +265,11 @@ function App() {
               </button>
               <button
                 type="button"
-                onClick={step === 5 ? reset : nextStep}
+                onClick={step === 6 ? reset : nextStep}
                 className="inline-flex h-11 items-center gap-1.5 rounded-full bg-[#191F28] px-4 text-[13px] font-black text-white shadow-sm transition hover:-translate-y-0.5"
               >
-                {step === 5 ? "처음으로" : "다음"}
-                {step === 5 ? null : <ChevronRight size={17} />}
+                {step === 6 ? "처음으로" : "다음"}
+                {step === 6 ? null : <ChevronRight size={17} />}
               </button>
             </div>
           </footer>
@@ -307,9 +314,10 @@ function PhoneShell({
 }
 
 function SeniorStory({ step, onTransfer }: { step: DemoStep; onTransfer: () => void }) {
-  if (step === 1) return <RiskDetectionScreen />;
-  if (step === 3) return <CallConnectedScreen />;
-  if (step === 4) return <ResolutionScreen />;
+  if (step === 0) return <SmallPaymentScreen />;
+  if (step === 2) return <RiskDetectionScreen />;
+  if (step === 4) return <CallConnectedScreen />;
+  if (step === 5) return <ResolutionScreen />;
 
   return (
     <div key={step} className="flex h-full flex-col bg-[#F7F8FA] px-5 pb-6 pt-4 animate-phone-scene">
@@ -352,6 +360,45 @@ function SeniorStory({ step, onTransfer }: { step: DemoStep; onTransfer: () => v
           송금하기
           <ArrowRight size={25} className="transition group-hover:translate-x-1" />
         </button>
+      </div>
+    </div>
+  );
+}
+
+function SmallPaymentScreen() {
+  return (
+    <div className="flex h-full flex-col bg-[#F7F8FA] px-5 pb-6 pt-4 animate-phone-scene">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-[14px] font-bold text-muted">간편 결제</p>
+          <h2 className="mt-1 text-[24px] font-black">행복마트</h2>
+        </div>
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8F8EE] text-[#17994F]">
+          <CheckCircle2 size={24} strokeWidth={2.4} />
+        </div>
+      </div>
+
+      <div className="mt-8 rounded-[30px] bg-white p-5 shadow-[0_18px_48px_-34px_rgba(25,31,40,0.45)]">
+        <p className="text-[13px] font-black text-muted">결제 금액</p>
+        <p className="mt-2 text-[44px] font-black leading-none tracking-[-0.03em]">
+          35,000원
+        </p>
+        <div className="mt-5 rounded-[22px] bg-[#E8F8EE] px-4 py-3 text-[#17994F]">
+          <div className="flex items-center gap-2 text-[15px] font-black">
+            <CheckCircle2 size={19} strokeWidth={2.5} />
+            바로 승인되었습니다
+          </div>
+          <p className="mt-1 text-[13px] font-bold leading-relaxed">
+            기준 금액보다 낮아 가족 확인 없이 조용히 처리됐어요.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-auto rounded-[24px] bg-[#E8F3FF] p-4 text-[#1B64DA]">
+        <p className="text-[14px] font-black">효돈의 기본값</p>
+        <p className="mt-1 text-[14px] font-bold leading-relaxed">
+          작은 결제는 부모님이 직접 결정합니다.
+        </p>
       </div>
     </div>
   );
@@ -407,13 +454,13 @@ function RiskDetectionScreen() {
 }
 
 function FamilyStory({ step, onNext }: { step: DemoStep; onNext: () => void }) {
-  if (step < 2) return <QuietFamilyScreen />;
-  if (step === 2) return <FamilyAlertScreen onNext={onNext} />;
-  if (step === 3) return <ConversationScreen onNext={onNext} />;
+  if (step < 3) return <QuietFamilyScreen smallPayment={step === 0} />;
+  if (step === 3) return <FamilyAlertScreen onNext={onNext} />;
+  if (step === 4) return <ConversationScreen onNext={onNext} />;
   return <FamilyResolutionScreen />;
 }
 
-function QuietFamilyScreen() {
+function QuietFamilyScreen({ smallPayment = false }: { smallPayment?: boolean }) {
   return (
     <div className="flex h-full flex-col bg-[#F7F8FA] px-5 pb-6 pt-4 animate-phone-scene">
       <div className="flex items-center justify-between">
@@ -428,16 +475,24 @@ function QuietFamilyScreen() {
 
       <div className="mt-8 rounded-[30px] bg-white p-5 shadow-[0_18px_48px_-34px_rgba(25,31,40,0.45)]">
         <p className="text-[13px] font-black text-muted">오늘의 상태</p>
-        <p className="mt-3 text-[30px] font-black leading-tight">조용합니다</p>
+        <p className="mt-3 text-[30px] font-black leading-tight">
+          {smallPayment ? "알림 없음" : "조용합니다"}
+        </p>
         <p className="mt-3 text-[15px] font-bold leading-relaxed text-muted">
-          일상 결제는 알림 없이 지나갑니다. 위험 신호가 있을 때만 알려드려요.
+          {smallPayment
+            ? "행복마트 35,000원 결제는 자녀 확인 없이 통과했습니다."
+            : "일상 결제는 알림 없이 지나갑니다. 위험 신호가 있을 때만 알려드려요."}
         </p>
       </div>
 
       <div className="mt-auto rounded-[24px] bg-[#E8F3FF] p-4 text-[#1B64DA]">
-        <p className="text-[14px] font-black">효돈의 원칙</p>
+        <p className="text-[14px] font-black">
+          {smallPayment ? "소액은 자유롭게" : "효돈의 원칙"}
+        </p>
         <p className="mt-1 text-[14px] font-bold leading-relaxed">
-          부모님의 모든 소비를 감시하지 않습니다.
+          {smallPayment
+            ? "가족 앱에는 승인 요청이 뜨지 않습니다."
+            : "부모님의 모든 소비를 감시하지 않습니다."}
         </p>
       </div>
     </div>
@@ -585,7 +640,7 @@ function ResolutionScreen() {
         필요시 가족과 다시 확인할 수 있습니다.
       </p>
       <div className="mt-8 rounded-full bg-white px-4 py-2 text-[13px] font-black text-muted shadow-sm">
-        부모님의 선택을 존중하는 안내
+        중립적인 안내
       </div>
     </div>
   );
@@ -603,7 +658,7 @@ function SummaryBubble({ icon, text }: { icon: React.ReactNode; text: string }) 
 }
 
 function InterventionRail({ step }: { step: DemoStep }) {
-  const active = step >= 1;
+  const active = step >= 2;
   return (
     <div className="hidden flex-col items-center justify-center sm:flex">
       <div className={`h-3 w-3 rounded-full ${active ? "bg-[#F04438]" : "bg-[#D6E4F8]"}`} />
@@ -613,10 +668,10 @@ function InterventionRail({ step }: { step: DemoStep }) {
           active ? "bg-[#F04438] text-white animate-alert-pop" : "bg-white text-muted"
         }`}
       >
-        {step >= 4 ? <CheckCircle2 size={28} /> : <ShieldCheck size={28} />}
+        {step >= 5 ? <CheckCircle2 size={28} /> : <ShieldCheck size={28} />}
       </div>
-      <div className={`my-3 h-28 w-px ${step >= 2 ? "bg-[#3182F6]/35" : "bg-[#D6E4F8]"}`} />
-      <div className={`h-3 w-3 rounded-full ${step >= 2 ? "bg-[#3182F6]" : "bg-[#D6E4F8]"}`} />
+      <div className={`my-3 h-28 w-px ${step >= 3 ? "bg-[#3182F6]/35" : "bg-[#D6E4F8]"}`} />
+      <div className={`h-3 w-3 rounded-full ${step >= 3 ? "bg-[#3182F6]" : "bg-[#D6E4F8]"}`} />
     </div>
   );
 }
@@ -630,25 +685,32 @@ function EndingScene({ endingLine }: { endingLine: 0 | 1 }) {
         alt=""
         className="relative z-10 h-24 w-24 rounded-[34px] object-cover shadow-[0_28px_70px_-30px_rgba(49,130,246,1)]"
       />
-      <div className="relative z-10 mt-10 min-h-[190px]">
-        <p
-          className={`text-[34px] font-black leading-tight tracking-[-0.02em] transition-all duration-700 sm:text-[52px] ${
-            endingLine === 0 ? "translate-y-0 opacity-100" : "-translate-y-8 opacity-20"
-          }`}
-        >
-          부모님을 통제하는 것이 아닙니다.
-        </p>
-        <p
-          className={`absolute inset-x-0 top-0 text-[34px] font-black leading-tight tracking-[-0.02em] transition-all delay-200 duration-900 sm:text-[52px] ${
-            endingLine === 1 ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-          }`}
-        >
-          부모님의 선택을 지키는 것입니다.
-        </p>
+      <div
+        className={`relative z-10 mt-10 transition-all duration-700 ${
+          endingLine === 1 ? "translate-y-0 opacity-100" : "translate-y-2 opacity-95"
+        }`}
+      >
+        <p className="text-[18px] font-black text-white/55">오늘의 결과</p>
+        <h2 className="mt-4 text-[34px] font-black leading-tight tracking-[-0.02em] sm:text-[52px]">
+          일상 결제는 그대로,
+          <br />
+          의심 송금은 잠시 보류
+        </h2>
       </div>
-      <p className="relative z-10 max-w-lg text-[18px] font-bold leading-relaxed text-white/58">
-        Hyodon protects autonomy by stopping only the moment that matters.
-      </p>
+      <div className="relative z-10 mt-10 grid w-full max-w-xl gap-3 sm:grid-cols-3">
+        <ResultPill label="35,000원" value="즉시 승인" />
+        <ResultPill label="5,300,000원" value="위험 감지" />
+        <ResultPill label="가족 확인" value="송금 보류" />
+      </div>
+    </div>
+  );
+}
+
+function ResultPill({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[22px] bg-white/10 px-4 py-4 text-left ring-1 ring-white/10 backdrop-blur">
+      <p className="text-[13px] font-black text-white/45">{label}</p>
+      <p className="mt-1 text-[18px] font-black text-white">{value}</p>
     </div>
   );
 }
