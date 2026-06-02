@@ -32,14 +32,14 @@ export default function MerchantSelector({
             type="button"
             className={`min-h-[104px] rounded-[22px] border-2 bg-white p-3 text-left shadow-sm transition active:scale-[0.98] ${
               selected
-                ? "border-sage shadow-[0_14px_28px_-18px_rgba(81,104,90,0.55)]"
-                : "border-line hover:border-sage/35"
+                ? "border-toss bg-[#F8FBFF] shadow-[0_16px_32px_-20px_rgba(49,130,246,0.55)]"
+                : "border-line hover:border-toss/35 hover:shadow-card"
             }`}
             onClick={() => onSelect(merchant)}
           >
             <span
               className={`flex h-9 w-9 items-center justify-center rounded-2xl ${
-                selected ? "bg-sage text-white" : "bg-soft text-sage"
+                selected ? "bg-toss text-white" : "bg-[#E8F3FF] text-toss"
               }`}
             >
                 <Icon size={20} strokeWidth={2.3} />

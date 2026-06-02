@@ -3,9 +3,11 @@ import {
   ArrowLeft,
   CheckCircle2,
   CreditCard,
+  MousePointerClick,
   QrCode,
   ShieldCheck,
   Smartphone,
+  XCircle,
 } from "lucide-react";
 import MerchantSelector from "./MerchantSelector";
 import TransactionList from "./TransactionList";
@@ -36,7 +38,7 @@ const paymentMethods: Array<{
     title: "간편결제",
     description: "큰 버튼으로 바로 결제해요",
     icon: Smartphone,
-    iconClass: "bg-sage/12 text-sage",
+    iconClass: "bg-toss/12 text-toss",
     barClass: "bg-sage",
   },
   {
@@ -44,15 +46,15 @@ const paymentMethods: Array<{
     title: "안심카드",
     description: "매장에서 카드를 찍는 상황이에요",
     icon: CreditCard,
-    iconClass: "bg-gold/14 text-gold",
-    barClass: "bg-gold",
+    iconClass: "bg-[#E8F3FF] text-[#1B64DA]",
+    barClass: "bg-[#1B64DA]",
   },
   {
     id: "qr",
     title: "QR결제",
     description: "QR을 보여주거나 스캔해요",
     icon: QrCode,
-    iconClass: "bg-toss/10 text-toss",
+    iconClass: "bg-[#EDF6FF] text-toss",
     barClass: "bg-toss",
   },
 ];
@@ -103,7 +105,7 @@ export default function SeniorPhone({
               <button
                 key={method.id}
                 type="button"
-                className={`method-card method-card-${index} group relative overflow-hidden rounded-[28px] border-2 border-white bg-white p-5 text-left shadow-card transition active:scale-[0.98]`}
+                className={`method-card method-card-${index} group relative overflow-hidden rounded-[28px] border-2 border-white bg-white p-5 text-left shadow-card transition hover:-translate-y-0.5 hover:border-toss/25 hover:shadow-[0_20px_44px_-24px_rgba(49,130,246,0.55)] active:scale-[0.98]`}
                 onClick={() => onSelectPaymentMethod(method.id)}
               >
                 <span
@@ -134,7 +136,7 @@ export default function SeniorPhone({
           })}
         </div>
 
-        <div className="mt-auto rounded-[22px] bg-sage/10 px-4 py-3 text-[14px] font-bold leading-relaxed text-sage animate-soft-glow">
+        <div className="mt-auto rounded-[22px] bg-toss/10 px-4 py-3 text-[14px] font-bold leading-relaxed text-toss animate-soft-glow">
           어떤 방법을 골라도 금액 기준에 따라 소액은 바로 통과하고, 고액은 자녀 확인으로 넘어가요.
         </div>
       </div>
@@ -154,7 +156,7 @@ export default function SeniorPhone({
         </button>
 
         <div className="flex flex-1 flex-col items-center justify-center text-center">
-          <div className="flex h-24 w-24 items-center justify-center rounded-[30px] bg-white text-sage shadow-[0_12px_30px_-14px_rgba(33,31,26,0.4)] animate-float">
+          <div className="flex h-24 w-24 items-center justify-center rounded-[30px] bg-white text-toss shadow-[0_18px_38px_-18px_rgba(49,130,246,0.55)] animate-float">
             {SelectedPaymentIcon ? (
               <SelectedPaymentIcon size={48} strokeWidth={2.1} />
             ) : (
@@ -162,7 +164,7 @@ export default function SeniorPhone({
             )}
           </div>
           {selectedPaymentMethod ? (
-            <p className="mt-6 rounded-full bg-sage/10 px-4 py-2 text-[15px] font-black text-sage">
+            <p className="mt-6 rounded-full bg-toss/10 px-4 py-2 text-[15px] font-black text-toss">
               {selectedPaymentMethod.title}
             </p>
           ) : null}
@@ -178,16 +180,18 @@ export default function SeniorPhone({
         <div className="grid gap-3">
           <button
             type="button"
-            className="h-[66px] rounded-[22px] bg-sage text-[22px] font-black text-white shadow-[0_14px_28px_-12px_rgba(81,104,90,0.6)] transition active:scale-[0.98]"
+            className="inline-flex h-[66px] items-center justify-center gap-2 rounded-[22px] bg-toss text-[22px] font-black text-white shadow-[0_16px_34px_-14px_rgba(49,130,246,0.75)] transition active:scale-[0.98]"
             onClick={onConfirmPayment}
           >
+            <CheckCircle2 size={25} strokeWidth={2.6} />
             맞아요
           </button>
           <button
             type="button"
-            className="h-[60px] rounded-[22px] bg-[#F2EDE2] text-[20px] font-black text-muted transition active:scale-[0.98]"
+            className="inline-flex h-[60px] items-center justify-center gap-2 rounded-[22px] bg-[#F2F4F6] text-[20px] font-black text-muted transition active:scale-[0.98]"
             onClick={onCancelConfirm}
           >
+            <XCircle size={23} strokeWidth={2.4} />
             취소
           </button>
         </div>
@@ -199,8 +203,8 @@ export default function SeniorPhone({
     return (
       <div className="flex min-h-full flex-col items-center justify-center bg-paper px-6 pb-8 text-center animate-rise">
         <div className="relative flex h-28 w-28 items-center justify-center">
-          <span className="absolute h-full w-full animate-pulse-ring rounded-full bg-gold/15" />
-          <span className="relative flex h-24 w-24 items-center justify-center rounded-full bg-gold/15 text-gold">
+          <span className="absolute h-full w-full animate-pulse-ring rounded-full bg-toss/15" />
+          <span className="relative flex h-24 w-24 items-center justify-center rounded-full bg-toss/12 text-toss">
             <CreditCard size={44} strokeWidth={2.1} />
           </span>
         </div>
@@ -222,10 +226,10 @@ export default function SeniorPhone({
             </div>
           </div>
         ) : null}
-        <div className="mt-8 flex items-center gap-2 text-[14px] font-bold text-gold">
-          <span className="loading-dot h-2.5 w-2.5 rounded-full bg-gold" />
-          <span className="loading-dot h-2.5 w-2.5 rounded-full bg-gold" />
-          <span className="loading-dot h-2.5 w-2.5 rounded-full bg-gold" />
+        <div className="mt-8 flex items-center gap-2 text-[14px] font-bold text-toss">
+          <span className="loading-dot h-2.5 w-2.5 rounded-full bg-toss" />
+          <span className="loading-dot h-2.5 w-2.5 rounded-full bg-toss" />
+          <span className="loading-dot h-2.5 w-2.5 rounded-full bg-toss" />
           <span className="ml-1">확인 요청을 보냈어요</span>
         </div>
       </div>
@@ -267,12 +271,14 @@ export default function SeniorPhone({
             김순자님
           </h3>
         </div>
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-sage/12 text-sage">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-toss/12 text-toss">
           <ShieldCheck size={27} strokeWidth={2.3} />
         </span>
       </header>
 
-      <section className="mt-4 rounded-[28px] bg-sage px-5 py-5 text-white shadow-[0_18px_36px_-16px_rgba(81,104,90,0.65)]">
+      <section className="relative mt-4 overflow-hidden rounded-[28px] bg-toss px-5 py-5 text-white shadow-[0_20px_42px_-18px_rgba(49,130,246,0.72)]">
+        <span className="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full bg-white/12" />
+        <span className="pointer-events-none absolute bottom-4 right-6 h-16 w-16 rounded-full border border-white/18" />
         <p className="text-[16px] font-bold text-white/75">안심지갑 잔액</p>
         <p className="mt-2 text-[38px] font-black leading-none">
           {formatWon(state.balance)}
@@ -312,10 +318,11 @@ export default function SeniorPhone({
         </div>
         <button
           type="button"
-          className="h-[66px] w-full rounded-[24px] bg-ink text-[22px] font-black text-white shadow-[0_14px_28px_-12px_rgba(33,31,26,0.6)] transition enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#D5D0C4] disabled:text-white"
+          className="inline-flex h-[66px] w-full items-center justify-center gap-2 rounded-[24px] bg-toss text-[22px] font-black text-white shadow-[0_16px_34px_-14px_rgba(49,130,246,0.75)] transition enabled:hover:-translate-y-0.5 enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-[#D5DCE5] disabled:text-white"
           disabled={!selectedMerchant}
           onClick={onStartPayment}
         >
+          <MousePointerClick size={25} strokeWidth={2.5} />
           {selectedMerchant
             ? `${formatWon(selectedMerchant.amount)} 결제하기`
             : "결제할 곳을 골라주세요"}
@@ -348,7 +355,7 @@ function ResultScreen({
     <div className="flex min-h-full flex-col items-center justify-center bg-paper px-6 pb-8 text-center animate-rise">
       <div
         className={`flex h-28 w-28 animate-pop items-center justify-center rounded-full ${
-          isSuccess ? "bg-sage/12 text-sage" : "bg-[#F2EDE2] text-gold"
+          isSuccess ? "bg-toss/12 text-toss" : "bg-[#F2F4F6] text-rust"
         }`}
       >
         {icon}
@@ -362,9 +369,10 @@ function ResultScreen({
       </p>
       <button
         type="button"
-        className="mt-10 h-[64px] w-full rounded-[24px] bg-ink text-[21px] font-black text-white shadow-[0_14px_28px_-12px_rgba(33,31,26,0.6)] transition active:scale-[0.98]"
+        className="mt-10 inline-flex h-[64px] w-full items-center justify-center gap-2 rounded-[24px] bg-toss text-[21px] font-black text-white shadow-[0_16px_34px_-14px_rgba(49,130,246,0.75)] transition active:scale-[0.98]"
         onClick={onReturnHome}
       >
+        <CheckCircle2 size={24} strokeWidth={2.5} />
         확인
       </button>
     </div>

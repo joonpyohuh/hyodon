@@ -18,12 +18,12 @@ export default function ApprovalCard({
   return (
     <section
       className={`animate-slide-up overflow-hidden rounded-[28px] border-2 shadow-[0_22px_48px_-20px_rgba(33,31,26,0.35)] ${
-        isAnomaly ? "border-rust bg-[#FFF4EF]" : "border-gold bg-[#FFF8E8]"
+        isAnomaly ? "border-rust bg-[#FFF4EF]" : "border-toss bg-[#F8FBFF]"
       }`}
     >
       <div
         className={`flex items-center gap-2 px-5 py-3 text-[14px] font-black text-white ${
-          isAnomaly ? "bg-rust" : "bg-gold"
+          isAnomaly ? "bg-rust" : "bg-toss"
         }`}
       >
         {isAnomaly ? (
@@ -42,7 +42,7 @@ export default function ApprovalCard({
       <div className="p-5">
         <p
           className={`text-[15px] font-bold leading-relaxed ${
-            isAnomaly ? "text-rust" : "text-gold"
+            isAnomaly ? "text-rust" : "text-toss"
           }`}
         >
           {isAnomaly
@@ -72,7 +72,7 @@ export default function ApprovalCard({
             className={`flex min-h-[54px] items-center justify-center gap-2 rounded-[18px] text-[16px] font-black transition active:scale-[0.98] ${
               isAnomaly
                 ? "bg-white text-rust ring-1 ring-rust/25"
-                : "bg-sage text-white"
+                : "bg-toss text-white"
             }`}
             onClick={onApprove}
           >

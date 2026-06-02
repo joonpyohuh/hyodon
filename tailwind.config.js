@@ -4,19 +4,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        paper: "#F8F5EE",
+        paper: "#F7F8FA",
         soft: "#F7F8FA",
         ink: "#191F28",
         muted: "#6B7684",
         line: "#E5E8EB",
-        sage: "#51685A",
+        sage: "#3182F6",
         toss: "#3182F6",
-        gold: "#B08642",
+        gold: "#4E8FF7",
         rust: "#A1503A",
       },
       boxShadow: {
-        phone: "0 32px 80px rgba(25, 31, 40, 0.18)",
-        card: "0 14px 35px rgba(25, 31, 40, 0.08)",
+        phone: "0 32px 90px rgba(25, 31, 40, 0.2)",
+        card: "0 14px 35px rgba(49, 130, 246, 0.1)",
       },
       fontFamily: {
         sans: [

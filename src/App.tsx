@@ -399,11 +399,11 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen blue-stage">
       <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/86 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sage text-[17px] font-black text-white shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-toss text-[17px] font-black text-white shadow-sm">
               효
             </div>
             <div>
@@ -422,7 +422,7 @@ function App() {
               aria-pressed={voiceEnabled}
               onClick={() => setVoiceEnabled((current) => !current)}
               className={`inline-flex h-10 items-center gap-2 rounded-full px-3.5 text-[13px] font-black transition ${
-                voiceEnabled ? "bg-sage/12 text-sage" : "bg-white text-muted"
+                voiceEnabled ? "bg-toss/12 text-toss" : "bg-white text-muted"
               }`}
             >
               <Volume2 size={16} strokeWidth={2.4} />
@@ -431,7 +431,7 @@ function App() {
             <button
               type="button"
               onClick={resetDemo}
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-ink px-3.5 text-[13px] font-black text-white transition active:scale-[0.98]"
+              className="inline-flex h-10 items-center gap-2 rounded-full bg-toss px-3.5 text-[13px] font-black text-white shadow-sm transition active:scale-[0.98]"
             >
               <RotateCcw size={15} strokeWidth={2.6} />
               초기화
@@ -443,7 +443,7 @@ function App() {
       <main className="px-5 py-5 sm:px-8 lg:px-10">
         <section className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex rounded-full bg-gold/12 px-3 py-1 text-[12px] font-black text-gold">
+            <span className="inline-flex rounded-full bg-toss/10 px-3 py-1 text-[12px] font-black text-toss">
               차등 승인 결제 · 인터랙티브 데모
             </span>
             <h1 className="mt-2 text-[36px] font-black leading-tight text-ink sm:text-[46px]">
@@ -489,19 +489,19 @@ function App() {
           </PhoneFrame>
 
           <div className="hidden min-h-[600px] w-[72px] flex-col items-center justify-center lg:flex">
-            <div className="h-2 w-2 rounded-full bg-sage" />
-            <div className="my-3 h-28 w-px bg-sage/25" />
+            <div className="h-2 w-2 rounded-full bg-toss" />
+            <div className="my-3 h-28 w-px bg-toss/25" />
             <div
               className={`rounded-full px-3 py-2 text-center text-[12px] font-black shadow-sm ${
                 state.pendingApproval
-                  ? "bg-gold/12 text-gold"
-                  : "bg-sage/10 text-sage"
+                  ? "bg-toss/12 text-toss"
+                  : "bg-toss/10 text-toss"
               }`}
             >
               {state.pendingApproval ? "승인 요청" : "실시간 연결"}
             </div>
-            <div className="my-3 h-28 w-px bg-sage/25" />
-            <div className="h-2 w-2 rounded-full bg-sage" />
+            <div className="my-3 h-28 w-px bg-toss/25" />
+            <div className="h-2 w-2 rounded-full bg-toss" />
           </div>
 
           <PhoneFrame title="자녀 앱" subtitle="이지현님 · 42세" accent="toss">

@@ -41,14 +41,14 @@ const scenarioMeta = [
 
 const toneClass = {
   sage: {
-    active: "border-sage bg-sage/10",
-    icon: "bg-sage text-white",
-    chip: "bg-sage/10 text-sage",
+    active: "border-toss bg-toss/10 shadow-[0_16px_32px_-22px_rgba(49,130,246,0.8)]",
+    icon: "bg-toss text-white",
+    chip: "bg-toss/10 text-toss",
   },
   gold: {
-    active: "border-gold bg-gold/10",
-    icon: "bg-gold text-white",
-    chip: "bg-gold/12 text-gold",
+    active: "border-[#1B64DA] bg-[#E8F3FF] shadow-[0_16px_32px_-22px_rgba(49,130,246,0.8)]",
+    icon: "bg-[#1B64DA] text-white",
+    chip: "bg-[#E8F3FF] text-[#1B64DA]",
   },
   rust: {
     active: "border-rust bg-rust/10",
@@ -82,7 +82,7 @@ export default function DemoControls({
             <button
               key={merchantId}
               type="button"
-            className={`rounded-[20px] border-2 bg-white p-3 text-left shadow-sm transition active:scale-[0.98] ${
+            className={`rounded-[20px] border-2 bg-white p-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-card active:scale-[0.98] ${
                 active ? classes.active : "border-white hover:border-line"
               }`}
               onClick={() => onSelectScenario(merchantId)}
@@ -91,7 +91,7 @@ export default function DemoControls({
               <div className="flex items-start gap-3">
                 <span
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl ${
-                    active ? classes.icon : "bg-soft text-ink"
+                    active ? classes.icon : "bg-[#E8F3FF] text-toss"
                   }`}
                 >
                   <Icon size={20} strokeWidth={2.4} />
@@ -117,7 +117,7 @@ export default function DemoControls({
 
         <button
           type="button"
-          className="flex min-h-[88px] items-center justify-center gap-2 rounded-[20px] bg-ink px-5 text-[15px] font-black text-white shadow-card transition active:scale-[0.98]"
+          className="flex min-h-[88px] items-center justify-center gap-2 rounded-[20px] bg-toss px-5 text-[15px] font-black text-white shadow-card transition hover:-translate-y-0.5 active:scale-[0.98]"
           onClick={onReset}
         >
           <RotateCcw size={18} strokeWidth={2.5} />

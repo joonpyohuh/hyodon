@@ -2,16 +2,16 @@ import { BarChart3 } from "lucide-react";
 import { formatWon } from "../utils/format";
 
 const reportRows = [
-  { label: "마트", amount: 35000, color: "bg-sage" },
+  { label: "마트", amount: 35000, color: "bg-toss" },
   { label: "약국", amount: 12000, color: "bg-toss" },
-  { label: "건강/기타", amount: 95000, color: "bg-gold" },
+  { label: "건강/기타", amount: 95000, color: "bg-[#1B64DA]" },
 ];
 
 export default function ReportCard() {
   return (
     <section className="rounded-[28px] bg-white p-5 shadow-[0_12px_30px_-18px_rgba(33,31,26,0.35)]">
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-soft text-sage">
+        <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-toss/10 text-toss">
           <BarChart3 size={21} strokeWidth={2.3} />
         </span>
         <div>

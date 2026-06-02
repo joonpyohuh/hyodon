@@ -12,7 +12,7 @@ const statusMeta = {
   approved: {
     label: "승인 완료",
     icon: CheckCircle2,
-    className: "text-sage bg-sage/10",
+    className: "text-toss bg-toss/10",
   },
   declined: {
     label: "처리 안 됨",
@@ -22,7 +22,7 @@ const statusMeta = {
   pending: {
     label: "확인 중",
     icon: Clock3,
-    className: "text-gold bg-gold/10",
+    className: "text-rust bg-rust/10",
   },
 };
 

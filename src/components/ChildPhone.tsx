@@ -1,4 +1,4 @@
-import { Bell, Shield, WalletCards } from "lucide-react";
+import { Bell, Minus, Plus, Shield, WalletCards } from "lucide-react";
 import ApprovalCard from "./ApprovalCard";
 import ReportCard from "./ReportCard";
 import TransactionList from "./TransactionList";
@@ -16,8 +16,8 @@ interface ChildPhoneProps {
 
 const activityToneClass = {
   neutral: "bg-soft text-muted",
-  success: "bg-sage/10 text-sage",
-  warning: "bg-gold/10 text-gold",
+  success: "bg-toss/10 text-toss",
+  warning: "bg-[#E8F3FF] text-[#1B64DA]",
   danger: "bg-rust/10 text-rust",
 };
 
@@ -72,7 +72,7 @@ export default function ChildPhone({
           </div>
           <span
             className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
-              state.cardFrozen ? "bg-rust/10 text-rust" : "bg-sage/10 text-sage"
+              state.cardFrozen ? "bg-rust/10 text-rust" : "bg-toss/10 text-toss"
             }`}
           >
             <WalletCards size={25} strokeWidth={2.3} />
@@ -150,9 +150,9 @@ export default function ChildPhone({
       </section>
 
       {!state.pendingApproval ? (
-        <section className="mt-4 rounded-[24px] border border-line bg-white p-4 shadow-sm">
+        <section className="mt-4 rounded-[24px] border border-toss/10 bg-[#F8FBFF] p-4 shadow-sm">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sage/10 text-sage">
+            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-toss/10 text-toss">
               <Shield size={22} strokeWidth={2.3} />
             </span>
             <div>
@@ -200,11 +200,15 @@ function StepButton({
   return (
     <button
       type="button"
-      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#F2F4F6] text-[24px] font-black text-ink transition active:scale-[0.96] disabled:opacity-40"
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#E8F3FF] text-[24px] font-black text-toss transition hover:bg-toss hover:text-white active:scale-[0.96] disabled:opacity-40"
       onClick={onClick}
       disabled={disabled}
     >
-      {label}
+      {label === "+" ? (
+        <Plus size={24} strokeWidth={2.8} />
+      ) : (
+        <Minus size={24} strokeWidth={2.8} />
+      )}
     </button>
   );
 }
