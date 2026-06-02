@@ -1,535 +1,654 @@
-import { useMemo, useState } from "react";
-import { RotateCcw, Volume2 } from "lucide-react";
-import ChildPhone from "./components/ChildPhone";
-import DemoControls from "./components/DemoControls";
-import PhoneFrame from "./components/PhoneFrame";
-import SeniorPhone from "./components/SeniorPhone";
-import type {
-  Activity,
-  AppState,
-  Merchant,
-  PendingApproval,
-  Transaction,
-} from "./types";
-import { formatWon } from "./utils/format";
-import { speakKorean } from "./utils/speech";
+import { useEffect, useMemo, useState } from "react";
+import {
+  AlertTriangle,
+  ArrowRight,
+  BadgeCheck,
+  BellRing,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  MessageCircle,
+  Pause,
+  Phone,
+  Play,
+  Radar,
+  ShieldCheck,
+  Sparkles,
+  TriangleAlert,
+} from "lucide-react";
 
-const INITIAL_BALANCE = 600000;
-const INITIAL_THRESHOLD = 100000;
+type DemoStep = 0 | 1 | 2 | 3 | 4 | 5;
 
-const merchants: Merchant[] = [
+const steps: Array<{
+  id: DemoStep;
+  eyebrow: string;
+  title: string;
+  meaning: string;
+}> = [
   {
-    id: "happy-mart",
-    name: "행복마트",
-    amount: 35000,
-    type: "grocery",
-    category: "장보기",
-    expected: "즉시 통과",
+    id: 0,
+    eyebrow: "01 Transfer attempt",
+    title: "부모님이 송금을 누르기 직전",
+    meaning: "사기는 평범한 송금 화면에서 시작됩니다.",
   },
   {
-    id: "pharmacy",
-    name: "우리약국",
-    amount: 12000,
-    type: "medical",
-    category: "의료",
-    expected: "즉시 통과",
+    id: 1,
+    eyebrow: "02 Hyodon detection",
+    title: "효돈이 평소와 다름을 감지",
+    meaning: "은행 앱은 송금만 처리하지만, 효돈은 맥락을 봅니다.",
   },
   {
-    id: "health-store",
-    name: "○○건강식품",
-    amount: 380000,
-    type: "retail",
-    category: "건강식품",
-    expected: "자녀 승인 요청",
+    id: 2,
+    eyebrow: "03 Family alert",
+    title: "가족에게 즉시 연결",
+    meaning: "부모님의 모든 결제가 아니라, 위험한 순간만 알려줍니다.",
   },
   {
-    id: "atm-transfer",
-    name: "ATM 계좌이체",
-    amount: 2000000,
-    type: "ATM_이체",
-    category: "송금",
-    expected: "이상거래 경고",
+    id: 3,
+    eyebrow: "04 Conversation",
+    title: "가족이 함께 확인",
+    meaning: "통제가 아니라 대화로 위험을 멈춥니다.",
+  },
+  {
+    id: 4,
+    eyebrow: "05 Resolution",
+    title: "거절이 아닌 보류",
+    meaning: "자존감을 해치지 않는 언어로 피해를 막습니다.",
+  },
+  {
+    id: 5,
+    eyebrow: "06 Why it matters",
+    title: "부모님의 선택을 지키는 기술",
+    meaning: "효돈은 금융 보호와 자율성을 함께 설계합니다.",
   },
 ];
 
-const createInitialState = (): AppState => ({
-  threshold: INITIAL_THRESHOLD,
-  balance: INITIAL_BALANCE,
-  cardFrozen: false,
-  selectedMerchant: merchants[0],
-  selectedPaymentMethod: null,
-  pendingApproval: null,
-  transactions: [],
-  activities: [],
-  seniorScreen: "home",
-  lastPayment: null,
-});
+const riskSignals = [
+  "처음 송금하는 계좌",
+  "평소보다 18배 큰 금액",
+  "투자 관련 키워드 감지",
+];
 
-const createId = (prefix: string) => `${prefix}-${Date.now()}-${Math.random()}`;
-
-const isAnomaly = (merchant: Pick<Merchant, "amount" | "type">) =>
-  merchant.amount >= 1000000 || merchant.type === "ATM_이체";
+const amount = "5,300,000원";
+const recipient = "김민수 대리 (투자지원센터)";
 
 function App() {
-  const [state, setState] = useState<AppState>(() => createInitialState());
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [step, setStep] = useState<DemoStep>(0);
+  const [autoPlay, setAutoPlay] = useState(false);
+  const [endingLine, setEndingLine] = useState<0 | 1>(0);
 
-  const heroStats = useMemo(
-    () => [
-      { label: "기본 승인 기준", value: formatWon(state.threshold) },
-      { label: "안심지갑 잔액", value: formatWon(state.balance) },
-      { label: "연결 상태", value: state.pendingApproval ? "확인 중" : "실시간 연결" },
-    ],
-    [state.balance, state.pendingApproval, state.threshold],
-  );
+  const activeStep = steps[step];
+  const progress = ((step + 1) / steps.length) * 100;
 
-  const say = (message: string) => {
-    if (voiceEnabled) speakKorean(message);
+  useEffect(() => {
+    if (!autoPlay) return undefined;
+
+    const timer = window.setTimeout(() => {
+      setStep((current) => (current === 5 ? 0 : ((current + 1) as DemoStep)));
+    }, step === 5 ? 5200 : 3900);
+
+    return () => window.clearTimeout(timer);
+  }, [autoPlay, step]);
+
+  useEffect(() => {
+    if (step !== 5) {
+      setEndingLine(0);
+      return undefined;
+    }
+
+    const timer = window.setTimeout(() => setEndingLine(1), 1700);
+    return () => window.clearTimeout(timer);
+  }, [step]);
+
+  const nextStep = () => setStep((current) => (current === 5 ? 5 : ((current + 1) as DemoStep)));
+  const prevStep = () => setStep((current) => (current === 0 ? 0 : ((current - 1) as DemoStep)));
+  const reset = () => {
+    setAutoPlay(false);
+    setStep(0);
   };
 
-  const addActivity = (
-    activity: Omit<Activity, "id" | "ts">,
-    at: number = Date.now(),
-  ): Activity => ({
-    ...activity,
-    id: createId("activity"),
-    ts: at,
-  });
-
-  const addTransaction = (
-    transaction: Omit<Transaction, "id" | "ts">,
-    at: number = Date.now(),
-  ): Transaction => ({
-    ...transaction,
-    id: createId("transaction"),
-    ts: at,
-  });
-
-  const selectMerchant = (merchant: Merchant) => {
-    setState((current) => ({
-      ...current,
-      selectedMerchant: merchant,
-      selectedPaymentMethod: null,
-      pendingApproval: null,
-      seniorScreen: "home",
-      lastPayment: null,
-    }));
-  };
-
-  const selectScenario = (merchantId: string) => {
-    const merchant = merchants.find((item) => item.id === merchantId);
-    if (merchant) selectMerchant(merchant);
-  };
-
-  const startPayment = () => {
-    setState((current) => {
-      if (!current.selectedMerchant) return current;
-
-      return {
-        ...current,
-        pendingApproval: null,
-        seniorScreen: "method",
-        lastPayment: null,
-      };
-    });
-  };
-
-  const selectPaymentMethod = (paymentMethod: AppState["selectedPaymentMethod"]) => {
-    setState((current) => ({
-      ...current,
-      selectedPaymentMethod: paymentMethod,
-      seniorScreen: "confirm",
-    }));
-  };
-
-  const confirmPayment = () => {
-    let speechMessage: string | null = null;
-
-    setState((current) => {
-      const merchant = current.selectedMerchant;
-      const now = Date.now();
-
-      if (!merchant) return current;
-
-      if (current.cardFrozen) {
-        const transaction = addTransaction(
-          {
-            merchant: merchant.name,
-            amount: merchant.amount,
-            type: merchant.type,
-            status: "declined",
-            isAnomaly: isAnomaly(merchant),
-          },
-          now,
-        );
-        const activity = addActivity(
-          {
-            title: "카드 일시정지로 처리 안 됨",
-            description: `${merchant.name} · ${formatWon(merchant.amount)}`,
-            tone: "warning",
-          },
-          now,
-        );
-
-        speechMessage = "거래가 처리되지 않았어요.";
-
-        return {
-          ...current,
-          seniorScreen: "declined",
-          pendingApproval: null,
-          transactions: [transaction, ...current.transactions],
-          activities: [activity, ...current.activities],
-          lastPayment: {
-            merchant: merchant.name,
-            amount: merchant.amount,
-            status: "declined",
-            isAnomaly: transaction.isAnomaly,
-          },
-        };
-      }
-
-      if (merchant.amount < current.threshold) {
-        const transaction = addTransaction(
-          {
-            merchant: merchant.name,
-            amount: merchant.amount,
-            type: merchant.type,
-            status: "approved",
-            isAnomaly: false,
-          },
-          now,
-        );
-
-        speechMessage = `결제가 완료되었습니다. ${formatWon(merchant.amount)}`;
-
-        return {
-          ...current,
-          balance: Math.max(0, current.balance - merchant.amount),
-          seniorScreen: "done",
-          pendingApproval: null,
-          transactions: [transaction, ...current.transactions],
-          lastPayment: {
-            merchant: merchant.name,
-            amount: merchant.amount,
-            status: "approved",
-            isAnomaly: false,
-          },
-        };
-      }
-
-      const pendingApproval: PendingApproval = {
-        merchant: merchant.name,
-        amount: merchant.amount,
-        type: merchant.type,
-        isAnomaly: isAnomaly(merchant),
-        ts: now,
-      };
-      const activity = addActivity(
-        {
-          title: pendingApproval.isAnomaly ? "이상거래 확인 필요" : "고액 결제 확인 필요",
-          description: `${merchant.name} · ${formatWon(merchant.amount)}`,
-          tone: pendingApproval.isAnomaly ? "danger" : "warning",
-        },
-        now,
-      );
-
-      return {
-        ...current,
-        pendingApproval,
-        activities: [activity, ...current.activities],
-        seniorScreen: "waiting",
-      };
-    });
-
-    if (speechMessage) say(speechMessage);
-  };
-
-  const cancelConfirm = () => {
-    setState((current) => ({
-      ...current,
-      seniorScreen: "home",
-      selectedPaymentMethod: null,
-    }));
-  };
-
-  const approvePending = () => {
-    let speechMessage: string | null = null;
-
-    setState((current) => {
-      if (!current.pendingApproval) return current;
-
-      const approval = current.pendingApproval;
-      const now = Date.now();
-      const transaction = addTransaction(
-        {
-          merchant: approval.merchant,
-          amount: approval.amount,
-          type: approval.type,
-          status: "approved",
-          isAnomaly: approval.isAnomaly,
-        },
-        now,
-      );
-      const activity = addActivity(
-        {
-          title: "승인 완료",
-          description: `${approval.merchant} · ${formatWon(approval.amount)}`,
-          tone: "success",
-        },
-        now,
-      );
-
-      speechMessage = `결제가 완료되었습니다. ${formatWon(approval.amount)}`;
-
-      return {
-        ...current,
-        balance: Math.max(0, current.balance - approval.amount),
-        pendingApproval: null,
-        seniorScreen: "done",
-        transactions: [transaction, ...current.transactions],
-        activities: [activity, ...current.activities],
-        lastPayment: {
-          merchant: approval.merchant,
-          amount: approval.amount,
-          status: "approved",
-          isAnomaly: approval.isAnomaly,
-        },
-      };
-    });
-
-    if (speechMessage) say(speechMessage);
-  };
-
-  const declinePending = () => {
-    let speechMessage: string | null = null;
-
-    setState((current) => {
-      if (!current.pendingApproval) return current;
-
-      const approval = current.pendingApproval;
-      const now = Date.now();
-      const transaction = addTransaction(
-        {
-          merchant: approval.merchant,
-          amount: approval.amount,
-          type: approval.type,
-          status: "declined",
-          isAnomaly: approval.isAnomaly,
-        },
-        now,
-      );
-      const activity = addActivity(
-        {
-          title: approval.isAnomaly ? "이상거래 처리 안 됨" : "고액 결제 처리 안 됨",
-          description: `${approval.merchant} · ${formatWon(approval.amount)}`,
-          tone: approval.isAnomaly ? "danger" : "neutral",
-        },
-        now,
-      );
-
-      speechMessage = "거래가 처리되지 않았어요.";
-
-      return {
-        ...current,
-        pendingApproval: null,
-        seniorScreen: "declined",
-        transactions: [transaction, ...current.transactions],
-        activities: [activity, ...current.activities],
-        lastPayment: {
-          merchant: approval.merchant,
-          amount: approval.amount,
-          status: "declined",
-          isAnomaly: approval.isAnomaly,
-        },
-      };
-    });
-
-    if (speechMessage) say(speechMessage);
-  };
-
-  const setThreshold = (nextThreshold: number) => {
-    setState((current) => {
-      const threshold = Math.min(500000, Math.max(50000, nextThreshold));
-      const activity = addActivity({
-        title: "기준 금액 변경",
-        description: `${formatWon(threshold)} 이상 확인`,
-        tone: "neutral",
-      });
-
-      return {
-        ...current,
-        threshold,
-        activities: [activity, ...current.activities],
-      };
-    });
-  };
-
-  const adjustThreshold = (delta: number) => {
-    setThreshold(state.threshold + delta);
-  };
-
-  const toggleFrozen = () => {
-    setState((current) => {
-      const nextFrozen = !current.cardFrozen;
-      const activity = addActivity({
-        title: nextFrozen ? "카드 일시정지" : "카드 다시 사용",
-        description: nextFrozen ? "모든 결제가 잠시 멈췄어요" : "결제를 다시 받을 수 있어요",
-        tone: nextFrozen ? "warning" : "success",
-      });
-
-      return {
-        ...current,
-        cardFrozen: nextFrozen,
-        activities: [activity, ...current.activities],
-      };
-    });
-  };
-
-  const returnHome = () => {
-    setState((current) => ({
-      ...current,
-      seniorScreen: "home",
-      lastPayment: null,
-      selectedPaymentMethod: null,
-    }));
-  };
-
-  const resetDemo = () => {
-    setState(createInitialState());
-  };
+  const storyCopy = useMemo(() => {
+    if (step === 0) return "기존 은행 앱이라면 여기서 송금은 그대로 진행됩니다.";
+    if (step === 1) return "효돈은 금액, 수취인, 문맥을 함께 보고 위험도를 계산합니다.";
+    if (step === 2) return "부모님의 일상 결제는 조용히 지나가고, 위험한 송금만 가족에게 도착합니다.";
+    if (step === 3) return "가족은 버튼 하나로 전화하고, 대화의 핵심만 확인합니다.";
+    if (step === 4) return "부모님 화면에는 ‘거절’이 아니라 ‘잠시 보류’로 표시됩니다.";
+    return "보호는 통제가 아니라, 선택권을 지켜주는 설계입니다.";
+  }, [step]);
 
   return (
-    <div className="min-h-screen blue-stage">
-      <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/86 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-[18px] bg-toss text-[17px] font-black text-white shadow-[0_12px_26px_-14px_rgba(49,130,246,0.8)] ring-1 ring-white/80">
+    <main className="min-h-screen overflow-hidden bg-[#F7F9FC] text-ink">
+      <section className="relative min-h-screen px-5 py-5 sm:px-8 lg:px-10">
+        <div className="premium-grid absolute inset-0" />
+        <div className="blue-halo absolute left-1/2 top-[-24rem] h-[48rem] w-[48rem] -translate-x-1/2 rounded-full" />
+
+        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-40px)] max-w-7xl flex-col">
+          <header className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
               <img
                 src="/hyodon-logo.png"
                 alt="효돈 로고"
-                className="h-full w-full object-cover"
+                className="h-12 w-12 rounded-[18px] object-cover shadow-[0_16px_34px_-18px_rgba(49,130,246,0.85)] ring-1 ring-white"
               />
-            </div>
-            <div>
-              <p className="text-[17px] font-black leading-tight text-ink">
-                효돈 <span className="text-muted">Hyo-Don</span>
-              </p>
-              <p className="text-[12px] font-bold leading-tight text-muted">
-                소액은 자유롭게, 고액만 자녀가.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              aria-pressed={voiceEnabled}
-              onClick={() => setVoiceEnabled((current) => !current)}
-              className={`inline-flex h-10 items-center gap-2 rounded-full px-3.5 text-[13px] font-black transition ${
-                voiceEnabled ? "bg-toss/12 text-toss" : "bg-white text-muted"
-              }`}
-            >
-              <Volume2 size={16} strokeWidth={2.4} />
-              {voiceEnabled ? "음성 켜짐" : "음성 꺼짐"}
-            </button>
-            <button
-              type="button"
-              onClick={resetDemo}
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-toss px-3.5 text-[13px] font-black text-white shadow-sm transition active:scale-[0.98]"
-            >
-              <RotateCcw size={15} strokeWidth={2.6} />
-              초기화
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="px-5 py-5 sm:px-8 lg:px-10">
-        <section className="mx-auto max-w-6xl">
-          <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex rounded-full bg-toss/10 px-3 py-1 text-[12px] font-black text-toss">
-              차등 승인 결제 · 인터랙티브 데모
-            </span>
-            <h1 className="mt-2 text-[36px] font-black leading-tight text-ink sm:text-[46px]">
-              소액은 자유롭게, 고액만 자녀가.
-            </h1>
-            <p className="mx-auto mt-2 max-w-2xl text-[16px] font-semibold leading-relaxed text-muted sm:text-[18px]">
-              시니어의 일상은 지키고, 고액 사기는 가족이 막는 차등 승인 결제 서비스
-            </p>
-          </div>
-
-          <div className="mx-auto mt-4 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-3">
-            {heroStats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-[22px] border border-white/90 bg-white/75 px-4 py-3 text-center shadow-sm backdrop-blur"
-              >
-                <p className="text-[13px] font-black text-muted">{stat.label}</p>
-                <p className="mt-1 text-[18px] font-black text-ink">{stat.value}</p>
+              <div>
+                <p className="text-[18px] font-black leading-tight">효돈 Hyo-Don</p>
+                <p className="text-[12px] font-bold text-muted">소액은 자유롭게, 위험한 고액만 가족이</p>
               </div>
-            ))}
-          </div>
-
-          <DemoControls
-            merchants={merchants}
-            selectedMerchant={state.selectedMerchant}
-            onSelectScenario={selectScenario}
-            onReset={resetDemo}
-          />
-        </section>
-
-        <section className="mx-auto mt-5 flex max-w-6xl flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
-          <PhoneFrame
-            title="시니어 앱"
-            subtitle="김순자님 · 72세"
-            accent="sage"
-            iconSrc="/hyodon-logo.png"
-          >
-            <SeniorPhone
-              state={state}
-              merchants={merchants}
-              onSelectMerchant={selectMerchant}
-              onStartPayment={startPayment}
-              onSelectPaymentMethod={selectPaymentMethod}
-              onConfirmPayment={confirmPayment}
-              onCancelConfirm={cancelConfirm}
-              onReturnHome={returnHome}
-            />
-          </PhoneFrame>
-
-          <div className="hidden min-h-[600px] w-[72px] flex-col items-center justify-center lg:flex">
-            <div className="h-2 w-2 rounded-full bg-toss" />
-            <div className="my-3 h-28 w-px bg-toss/25" />
-            <div
-              className={`rounded-full px-3 py-2 text-center text-[12px] font-black shadow-sm ${
-                state.pendingApproval
-                  ? "bg-toss/12 text-toss"
-                  : "bg-toss/10 text-toss"
-              }`}
-            >
-              {state.pendingApproval ? "승인 요청" : "실시간 연결"}
             </div>
-            <div className="my-3 h-28 w-px bg-toss/25" />
-            <div className="h-2 w-2 rounded-full bg-toss" />
-          </div>
 
-          <PhoneFrame
-            title="자녀 앱"
-            subtitle="이지현님 · 42세"
-            accent="toss"
-            iconSrc="/hyodon-logo.png"
+            <div className="hidden items-center gap-2 sm:flex">
+              {steps.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setStep(item.id)}
+                  className={`h-2.5 rounded-full transition-all ${
+                    item.id === step ? "w-9 bg-[#3182F6]" : "w-2.5 bg-[#D6E4F8]"
+                  }`}
+                  aria-label={`${item.id + 1}번 장면으로 이동`}
+                />
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setAutoPlay((current) => !current)}
+              className="inline-flex h-11 items-center gap-2 rounded-full bg-white px-4 text-[13px] font-black text-ink shadow-sm ring-1 ring-line transition hover:-translate-y-0.5"
+            >
+              {autoPlay ? <Pause size={16} /> : <Play size={16} />}
+              {autoPlay ? "일시정지" : "30초 시연"}
+            </button>
+          </header>
+
+          <section className="grid flex-1 items-center gap-8 py-6 lg:grid-cols-[0.92fr_1.55fr] lg:py-8">
+            <aside className="order-2 lg:order-1">
+              <div className="max-w-xl">
+                <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[12px] font-black text-[#3182F6] shadow-sm ring-1 ring-[#D6E4F8]">
+                  <Sparkles size={15} />
+                  Startup competition demo
+                </div>
+
+                <div key={step} className="mt-5 animate-keynote-copy">
+                  <p className="text-[13px] font-black uppercase tracking-[0.16em] text-[#3182F6]">
+                    {activeStep.eyebrow}
+                  </p>
+                  <h1 className="mt-3 max-w-[620px] text-[42px] font-black leading-[1.04] tracking-[-0.02em] text-ink sm:text-[58px] lg:text-[64px]">
+                    {activeStep.title}
+                  </h1>
+                  <p className="mt-5 max-w-lg text-[18px] font-bold leading-relaxed text-muted sm:text-[20px]">
+                    {storyCopy}
+                  </p>
+                </div>
+
+                <div className="mt-8 rounded-[28px] border border-white bg-white/78 p-5 shadow-[0_24px_60px_-36px_rgba(25,31,40,0.35)] backdrop-blur">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-[13px] font-black text-muted">핵심 가치</p>
+                      <p className="mt-1 text-[20px] font-black text-ink">
+                        {activeStep.meaning}
+                      </p>
+                    </div>
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[20px] bg-[#E8F3FF] text-[#3182F6]">
+                      <ShieldCheck size={25} strokeWidth={2.5} />
+                    </div>
+                  </div>
+                  <div className="mt-5 h-2 overflow-hidden rounded-full bg-[#E8F3FF]">
+                    <div
+                      className="h-full rounded-full bg-[#3182F6] transition-all duration-700 ease-out"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <section className="order-1 lg:order-2">
+              <div
+                className={`relative mx-auto grid max-w-[780px] items-center gap-5 transition-all duration-700 ${
+                  step === 5 ? "lg:grid-cols-1" : "sm:grid-cols-[1fr_88px_1fr]"
+                }`}
+              >
+                {step === 5 ? (
+                  <EndingScene endingLine={endingLine} />
+                ) : (
+                  <>
+                    <PhoneShell label="Senior app" name="김순자님 · 72세">
+                      <SeniorStory step={step} onTransfer={() => setStep(1)} />
+                    </PhoneShell>
+
+                    <InterventionRail step={step} />
+
+                    <PhoneShell label="Family app" name="이지현님 · 딸">
+                      <FamilyStory step={step} onNext={nextStep} />
+                    </PhoneShell>
+                  </>
+                )}
+              </div>
+            </section>
+          </section>
+
+          <footer className="relative z-10 flex flex-col gap-3 border-t border-[#DCE7F6] pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
+              {steps.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setStep(item.id)}
+                  className={`whitespace-nowrap rounded-full px-4 py-2 text-[13px] font-black transition ${
+                    item.id === step
+                      ? "bg-[#3182F6] text-white shadow-[0_16px_30px_-18px_rgba(49,130,246,0.9)]"
+                      : "bg-white text-muted ring-1 ring-line hover:text-ink"
+                  }`}
+                >
+                  {item.id + 1}. {item.title}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={prevStep}
+                disabled={step === 0}
+                className="inline-flex h-11 items-center gap-1.5 rounded-full bg-white px-4 text-[13px] font-black text-ink ring-1 ring-line transition disabled:opacity-35"
+              >
+                <ChevronLeft size={17} />
+                이전
+              </button>
+              <button
+                type="button"
+                onClick={step === 5 ? reset : nextStep}
+                className="inline-flex h-11 items-center gap-1.5 rounded-full bg-[#191F28] px-4 text-[13px] font-black text-white shadow-sm transition hover:-translate-y-0.5"
+              >
+                {step === 5 ? "처음으로" : "다음"}
+                {step === 5 ? null : <ChevronRight size={17} />}
+              </button>
+            </div>
+          </footer>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function PhoneShell({
+  label,
+  name,
+  children,
+}: {
+  label: string;
+  name: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mx-auto w-full max-w-[336px]">
+      <div className="mb-3 flex items-center gap-2 px-2">
+        <img src="/hyodon-logo.png" alt="" className="h-8 w-8 rounded-xl object-cover" />
+        <div>
+          <p className="text-[12px] font-black uppercase tracking-[0.08em] text-[#3182F6]">
+            {label}
+          </p>
+          <p className="text-[13px] font-bold text-muted">{name}</p>
+        </div>
+      </div>
+      <div className="relative h-[620px] overflow-hidden rounded-[46px] bg-[#111827] p-[10px] shadow-[0_42px_90px_-36px_rgba(25,31,40,0.55)]">
+        <div className="absolute left-1/2 top-[18px] z-20 h-6 w-28 -translate-x-1/2 rounded-full bg-[#111827]" />
+        <div className="h-full overflow-hidden rounded-[36px] bg-white">
+          <div className="flex h-11 items-center justify-between px-7 pt-1 text-[12px] font-black text-ink">
+            <span>9:41</span>
+            <span>5G</span>
+          </div>
+          <div className="h-[calc(100%-44px)] overflow-hidden">{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SeniorStory({ step, onTransfer }: { step: DemoStep; onTransfer: () => void }) {
+  if (step === 1) return <RiskDetectionScreen />;
+  if (step === 3) return <CallConnectedScreen />;
+  if (step === 4) return <ResolutionScreen />;
+
+  return (
+    <div key={step} className="flex h-full flex-col bg-[#F7F8FA] px-5 pb-6 pt-4 animate-phone-scene">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-[14px] font-bold text-muted">송금</p>
+          <h2 className="mt-1 text-[24px] font-black">받는 분 확인</h2>
+        </div>
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8F3FF] text-[#3182F6]">
+          <ShieldCheck size={23} />
+        </div>
+      </div>
+
+      <div className="mt-8 rounded-[28px] bg-white p-5 shadow-[0_18px_48px_-34px_rgba(25,31,40,0.45)]">
+        <p className="text-[13px] font-black text-muted">받는 분</p>
+        <p className="mt-2 text-[21px] font-black leading-snug">{recipient}</p>
+        <div className="mt-5 h-px bg-line" />
+        <p className="mt-5 text-[13px] font-black text-muted">송금 금액</p>
+        <p className="mt-2 text-[42px] font-black leading-none tracking-[-0.03em] text-ink">
+          {amount}
+        </p>
+      </div>
+
+      <div className="mt-4 rounded-[24px] bg-[#FFF7ED] p-4 text-[#9A5B10] ring-1 ring-[#F7D9AC]">
+        <div className="flex items-center gap-2 text-[14px] font-black">
+          <TriangleAlert size={18} />
+          투자지원센터
+        </div>
+        <p className="mt-1 text-[13px] font-bold leading-relaxed">
+          전화로 안내받은 계좌라면 한 번 더 확인이 필요합니다.
+        </p>
+      </div>
+
+      <div className="mt-auto">
+        <button
+          type="button"
+          onClick={onTransfer}
+          className="group flex h-[66px] w-full items-center justify-center gap-2 rounded-[24px] bg-[#3182F6] text-[22px] font-black text-white shadow-[0_18px_38px_-18px_rgba(49,130,246,0.85)] transition hover:-translate-y-0.5 active:scale-[0.98]"
+        >
+          송금하기
+          <ArrowRight size={25} className="transition group-hover:translate-x-1" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function RiskDetectionScreen() {
+  return (
+    <div className="relative flex h-full flex-col overflow-hidden bg-[#101828] px-5 pb-6 pt-5 text-white animate-phone-scene">
+      <div className="risk-radar absolute left-1/2 top-20 h-64 w-64 -translate-x-1/2 rounded-full" />
+      <div className="relative z-10">
+        <div className="flex h-16 w-16 items-center justify-center rounded-[24px] bg-[#F04438] text-white shadow-[0_18px_48px_-20px_rgba(240,68,56,0.85)] animate-alert-pop">
+          <AlertTriangle size={34} strokeWidth={2.5} />
+        </div>
+        <h2 className="mt-7 text-[32px] font-black leading-tight tracking-[-0.02em]">
+          평소와 다른
+          <br />
+          고액 송금입니다
+        </h2>
+        <p className="mt-3 text-[15px] font-bold leading-relaxed text-white/62">
+          효돈이 송금 맥락을 분석하고 가족 확인이 필요한 거래로 판단했습니다.
+        </p>
+      </div>
+
+      <div className="relative z-10 mt-7 rounded-[28px] bg-white/10 p-5 backdrop-blur-xl ring-1 ring-white/10">
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="text-[13px] font-black text-white/55">Risk score</p>
+            <p className="mt-1 text-[48px] font-black leading-none">87</p>
+          </div>
+          <span className="pb-1 text-[18px] font-black text-white/45">/100</span>
+        </div>
+        <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/12">
+          <div className="h-full w-[87%] rounded-full bg-[#F04438] animate-risk-fill" />
+        </div>
+      </div>
+
+      <div className="relative z-10 mt-4 grid gap-2.5">
+        {riskSignals.map((signal, index) => (
+          <div
+            key={signal}
+            className="flex items-center gap-3 rounded-[20px] bg-white/8 px-4 py-3 ring-1 ring-white/8"
+            style={{ animationDelay: `${index * 120}ms` }}
           >
-            <ChildPhone
-              state={state}
-              onApprove={approvePending}
-              onDecline={declinePending}
-              onAdjustThreshold={adjustThreshold}
-              onSetThreshold={setThreshold}
-              onToggleFrozen={toggleFrozen}
-            />
-          </PhoneFrame>
-        </section>
-      </main>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F04438]/18 text-[#FFB4AC]">
+              <Radar size={17} />
+            </span>
+            <span className="text-[14px] font-black">{signal}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FamilyStory({ step, onNext }: { step: DemoStep; onNext: () => void }) {
+  if (step < 2) return <QuietFamilyScreen />;
+  if (step === 2) return <FamilyAlertScreen onNext={onNext} />;
+  if (step === 3) return <ConversationScreen onNext={onNext} />;
+  return <FamilyResolutionScreen />;
+}
+
+function QuietFamilyScreen() {
+  return (
+    <div className="flex h-full flex-col bg-[#F7F8FA] px-5 pb-6 pt-4 animate-phone-scene">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-[14px] font-bold text-muted">가족 안심 모드</p>
+          <h2 className="mt-1 text-[24px] font-black">어머니 지갑</h2>
+        </div>
+        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8F3FF] text-[#3182F6]">
+          <BellRing size={23} />
+        </span>
+      </div>
+
+      <div className="mt-8 rounded-[30px] bg-white p-5 shadow-[0_18px_48px_-34px_rgba(25,31,40,0.45)]">
+        <p className="text-[13px] font-black text-muted">오늘의 상태</p>
+        <p className="mt-3 text-[30px] font-black leading-tight">조용합니다</p>
+        <p className="mt-3 text-[15px] font-bold leading-relaxed text-muted">
+          일상 결제는 알림 없이 지나갑니다. 위험 신호가 있을 때만 알려드려요.
+        </p>
+      </div>
+
+      <div className="mt-auto rounded-[24px] bg-[#E8F3FF] p-4 text-[#1B64DA]">
+        <p className="text-[14px] font-black">효돈의 원칙</p>
+        <p className="mt-1 text-[14px] font-bold leading-relaxed">
+          부모님의 모든 소비를 감시하지 않습니다.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function FamilyAlertScreen({ onNext }: { onNext: () => void }) {
+  return (
+    <div className="flex h-full flex-col bg-[#F7F8FA] px-5 pb-6 pt-4 animate-phone-scene">
+      <div className="rounded-[30px] bg-[#F04438] p-5 text-white shadow-[0_22px_56px_-24px_rgba(240,68,56,0.75)] animate-alert-pop">
+        <div className="flex items-center gap-2 text-[14px] font-black">
+          <BellRing size={19} />
+          긴급 확인 요청
+        </div>
+        <h2 className="mt-5 text-[30px] font-black leading-tight tracking-[-0.02em]">
+          어머님이
+          <br />
+          530만원 송금을
+          <br />
+          시도하고 있습니다
+        </h2>
+      </div>
+
+      <div className="mt-4 rounded-[26px] bg-white p-5 shadow-sm">
+        <p className="text-[13px] font-black text-muted">받는 분</p>
+        <p className="mt-2 text-[19px] font-black">{recipient}</p>
+        <div className="mt-4 h-px bg-line" />
+        <p className="mt-4 text-[13px] font-black text-muted">위험도</p>
+        <p className="mt-1 text-[32px] font-black text-[#F04438]">87/100</p>
+      </div>
+
+      <div className="mt-auto grid gap-3">
+        <button
+          type="button"
+          onClick={onNext}
+          className="flex h-[58px] items-center justify-center gap-2 rounded-[22px] bg-[#191F28] text-[17px] font-black text-white"
+        >
+          <Phone size={21} />
+          전화하기
+        </button>
+        <button
+          type="button"
+          onClick={onNext}
+          className="flex h-[58px] items-center justify-center gap-2 rounded-[22px] bg-[#E8F3FF] text-[17px] font-black text-[#1B64DA]"
+        >
+          <MessageCircle size={21} />
+          확인하기
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function ConversationScreen({ onNext }: { onNext: () => void }) {
+  return (
+    <div className="flex h-full flex-col bg-white px-5 pb-6 pt-4 animate-phone-scene">
+      <div className="flex items-center gap-3">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E8F3FF] text-[#3182F6]">
+          <Phone size={24} />
+        </div>
+        <div>
+          <p className="text-[14px] font-bold text-muted">통화 요약</p>
+          <h2 className="text-[22px] font-black">Daughter contacted parent</h2>
+        </div>
+      </div>
+
+      <div className="mt-8 grid gap-3">
+        <SummaryBubble icon={<CheckCircle2 size={20} />} text="어머님과 직접 통화했습니다" />
+        <SummaryBubble icon={<MessageCircle size={20} />} text="투자 사기 가능성을 함께 확인했습니다" />
+        <SummaryBubble icon={<Clock3 size={20} />} text="지금 송금하지 않기로 했습니다" />
+      </div>
+
+      <div className="mt-auto rounded-[28px] bg-[#F7F8FA] p-5">
+        <p className="text-[13px] font-black text-muted">효돈 제안</p>
+        <p className="mt-2 text-[24px] font-black leading-tight">
+          송금을 잠시 보류하고
+          <br />
+          가족 확인을 남깁니다
+        </p>
+        <button
+          type="button"
+          onClick={onNext}
+          className="mt-5 flex h-[58px] w-full items-center justify-center gap-2 rounded-[22px] bg-[#3182F6] text-[17px] font-black text-white"
+        >
+          보류로 안내하기
+          <ArrowRight size={20} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function FamilyResolutionScreen() {
+  return (
+    <div className="flex h-full flex-col items-center justify-center bg-[#F7F8FA] px-6 text-center animate-phone-scene">
+      <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#E8F8EE] text-[#17994F] animate-pop">
+        <BadgeCheck size={48} strokeWidth={2.3} />
+      </div>
+      <h2 className="mt-8 text-[30px] font-black leading-tight">피해를 막았습니다</h2>
+      <p className="mt-4 text-[16px] font-bold leading-relaxed text-muted">
+        가족은 부모님의 결정을 대신하지 않았습니다. 위험한 정보만 함께 확인했습니다.
+      </p>
+    </div>
+  );
+}
+
+function CallConnectedScreen() {
+  return (
+    <div className="flex h-full flex-col bg-[#F7F8FA] px-5 pb-6 pt-4 text-center animate-phone-scene">
+      <div className="mt-10 flex justify-center">
+        <div className="relative">
+          <span className="absolute inset-0 animate-pulse-ring rounded-full bg-[#3182F6]/15" />
+          <img
+            src="/hyodon-logo.png"
+            alt=""
+            className="relative h-24 w-24 rounded-[34px] object-cover shadow-[0_20px_50px_-24px_rgba(49,130,246,0.9)]"
+          />
+        </div>
+      </div>
+      <h2 className="mt-10 text-[30px] font-black leading-tight">가족과 확인 중입니다</h2>
+      <p className="mt-4 text-[18px] font-bold leading-relaxed text-muted">
+        안전한 송금인지 함께 확인하고 있어요.
+      </p>
+      <div className="mt-auto rounded-[24px] bg-white p-4 text-left shadow-sm">
+        <p className="text-[13px] font-black text-muted">송금 요청</p>
+        <p className="mt-1 text-[20px] font-black">{amount}</p>
+        <p className="mt-1 text-[14px] font-bold text-muted">{recipient}</p>
+      </div>
+    </div>
+  );
+}
+
+function ResolutionScreen() {
+  return (
+    <div className="flex h-full flex-col items-center justify-center bg-[#F7F8FA] px-6 pb-6 text-center animate-phone-scene">
+      <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#E8F8EE] text-[#17994F] animate-pop">
+        <CheckCircle2 size={50} strokeWidth={2.2} />
+      </div>
+      <h2 className="mt-9 text-[30px] font-black leading-tight">
+        이번 송금은
+        <br />
+        잠시 보류되었습니다
+      </h2>
+      <p className="mt-5 text-[18px] font-bold leading-relaxed text-muted">
+        필요시 가족과 다시 확인할 수 있습니다.
+      </p>
+      <div className="mt-8 rounded-full bg-white px-4 py-2 text-[13px] font-black text-muted shadow-sm">
+        부모님의 선택을 존중하는 안내
+      </div>
+    </div>
+  );
+}
+
+function SummaryBubble({ icon, text }: { icon: React.ReactNode; text: string }) {
+  return (
+    <div className="flex items-center gap-3 rounded-[24px] bg-[#F7F8FA] p-4">
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E8F3FF] text-[#3182F6]">
+        {icon}
+      </span>
+      <span className="text-left text-[16px] font-black leading-snug">{text}</span>
+    </div>
+  );
+}
+
+function InterventionRail({ step }: { step: DemoStep }) {
+  const active = step >= 1;
+  return (
+    <div className="hidden flex-col items-center justify-center sm:flex">
+      <div className={`h-3 w-3 rounded-full ${active ? "bg-[#F04438]" : "bg-[#D6E4F8]"}`} />
+      <div className={`my-3 h-28 w-px ${active ? "bg-[#F04438]/35" : "bg-[#D6E4F8]"}`} />
+      <div
+        className={`flex h-16 w-16 items-center justify-center rounded-[24px] shadow-sm transition-all duration-500 ${
+          active ? "bg-[#F04438] text-white animate-alert-pop" : "bg-white text-muted"
+        }`}
+      >
+        {step >= 4 ? <CheckCircle2 size={28} /> : <ShieldCheck size={28} />}
+      </div>
+      <div className={`my-3 h-28 w-px ${step >= 2 ? "bg-[#3182F6]/35" : "bg-[#D6E4F8]"}`} />
+      <div className={`h-3 w-3 rounded-full ${step >= 2 ? "bg-[#3182F6]" : "bg-[#D6E4F8]"}`} />
+    </div>
+  );
+}
+
+function EndingScene({ endingLine }: { endingLine: 0 | 1 }) {
+  return (
+    <div className="relative mx-auto flex min-h-[620px] w-full max-w-[780px] flex-col items-center justify-center overflow-hidden rounded-[44px] bg-[#08111F] px-8 text-center text-white shadow-[0_42px_100px_-36px_rgba(25,31,40,0.7)]">
+      <div className="ending-glow absolute inset-0" />
+      <img
+        src="/hyodon-logo.png"
+        alt=""
+        className="relative z-10 h-24 w-24 rounded-[34px] object-cover shadow-[0_28px_70px_-30px_rgba(49,130,246,1)]"
+      />
+      <div className="relative z-10 mt-10 min-h-[190px]">
+        <p
+          className={`text-[34px] font-black leading-tight tracking-[-0.02em] transition-all duration-700 sm:text-[52px] ${
+            endingLine === 0 ? "translate-y-0 opacity-100" : "-translate-y-8 opacity-20"
+          }`}
+        >
+          부모님을 통제하는 것이 아닙니다.
+        </p>
+        <p
+          className={`absolute inset-x-0 top-0 text-[34px] font-black leading-tight tracking-[-0.02em] transition-all delay-200 duration-900 sm:text-[52px] ${
+            endingLine === 1 ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+          }`}
+        >
+          부모님의 선택을 지키는 것입니다.
+        </p>
+      </div>
+      <p className="relative z-10 max-w-lg text-[18px] font-bold leading-relaxed text-white/58">
+        Hyodon protects autonomy by stopping only the moment that matters.
+      </p>
     </div>
   );
 }

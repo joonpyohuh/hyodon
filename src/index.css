@@ -27,11 +27,138 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.premium-grid {
+  background-image:
+    linear-gradient(rgba(49, 130, 246, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(49, 130, 246, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), transparent 82%);
+}
+
+.blue-halo {
+  background:
+    radial-gradient(circle, rgba(49, 130, 246, 0.2), rgba(49, 130, 246, 0.08) 36%, transparent 70%);
+  filter: blur(6px);
+}
+
 .blue-stage {
   background-image:
     linear-gradient(rgba(49, 130, 246, 0.045) 1px, transparent 1px),
     linear-gradient(90deg, rgba(49, 130, 246, 0.045) 1px, transparent 1px);
   background-size: 42px 42px;
+}
+
+@keyframes keynote-copy {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes phone-scene {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes alert-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes risk-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 87%;
+  }
+}
+
+@keyframes radar-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes radar-pulse {
+  0%,
+  100% {
+    opacity: 0.38;
+    transform: translate(-50%, -50%) scale(0.88);
+  }
+  50% {
+    opacity: 0.72;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.animate-keynote-copy {
+  animation: keynote-copy 0.72s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-phone-scene {
+  animation: phone-scene 0.58s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-alert-pop {
+  animation: alert-pop 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-risk-fill {
+  animation: risk-fill 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.risk-radar {
+  background:
+    conic-gradient(from 0deg, transparent 0deg, rgba(49, 130, 246, 0.05) 80deg, rgba(240, 68, 56, 0.5) 92deg, transparent 110deg),
+    radial-gradient(circle, transparent 0 32%, rgba(255, 255, 255, 0.08) 33% 34%, transparent 35% 54%, rgba(255, 255, 255, 0.08) 55% 56%, transparent 57%);
+  animation: radar-spin 2.8s linear infinite;
+}
+
+.risk-radar::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 54%;
+  width: 54%;
+  border-radius: 999px;
+  border: 1px solid rgba(240, 68, 56, 0.32);
+  animation: radar-pulse 1.8s ease-in-out infinite;
+}
+
+.ending-glow {
+  background:
+    radial-gradient(circle at 50% 26%, rgba(49, 130, 246, 0.36), transparent 34rem),
+    radial-gradient(circle at 20% 80%, rgba(23, 153, 79, 0.14), transparent 24rem),
+    linear-gradient(135deg, rgba(49, 130, 246, 0.08), transparent);
 }
 
 button,
