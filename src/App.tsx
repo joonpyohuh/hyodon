@@ -403,8 +403,12 @@ function App() {
       <header className="sticky top-0 z-40 border-b border-line/80 bg-paper/86 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-toss text-[17px] font-black text-white shadow-sm">
-              효
+            <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-[18px] bg-toss text-[17px] font-black text-white shadow-[0_12px_26px_-14px_rgba(49,130,246,0.8)] ring-1 ring-white/80">
+              <img
+                src="/hyodon-logo.png"
+                alt="효돈 로고"
+                className="h-full w-full object-cover"
+              />
             </div>
             <div>
               <p className="text-[17px] font-black leading-tight text-ink">
@@ -475,7 +479,12 @@ function App() {
         </section>
 
         <section className="mx-auto mt-5 flex max-w-6xl flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
-          <PhoneFrame title="시니어 앱" subtitle="김순자님 · 72세" accent="sage">
+          <PhoneFrame
+            title="시니어 앱"
+            subtitle="김순자님 · 72세"
+            accent="sage"
+            iconSrc="/hyodon-logo.png"
+          >
             <SeniorPhone
               state={state}
               merchants={merchants}
@@ -504,7 +513,12 @@ function App() {
             <div className="h-2 w-2 rounded-full bg-toss" />
           </div>
 
-          <PhoneFrame title="자녀 앱" subtitle="이지현님 · 42세" accent="toss">
+          <PhoneFrame
+            title="자녀 앱"
+            subtitle="이지현님 · 42세"
+            accent="toss"
+            iconSrc="/hyodon-logo.png"
+          >
             <ChildPhone
               state={state}
               onApprove={approvePending}

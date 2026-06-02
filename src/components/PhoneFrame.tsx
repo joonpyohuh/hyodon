@@ -5,6 +5,7 @@ interface PhoneFrameProps {
   title: string;
   subtitle: string;
   accent?: "sage" | "toss";
+  iconSrc?: string;
   children: ReactNode;
 }
 
@@ -12,6 +13,7 @@ export default function PhoneFrame({
   title,
   subtitle,
   accent = "sage",
+  iconSrc,
   children,
 }: PhoneFrameProps) {
   const accentClass = accent === "sage" ? "bg-sage" : "bg-toss";
@@ -20,9 +22,13 @@ export default function PhoneFrame({
     <section className="w-full max-w-[350px]" aria-label={title}>
       <div className="mb-3 flex items-center gap-2.5 px-2">
         <span
-          className={`flex h-8 w-8 items-center justify-center rounded-full ${accentClass} text-[13px] font-black text-white`}
+          className={`flex h-8 w-8 items-center justify-center overflow-hidden rounded-full ${accentClass} text-[13px] font-black text-white shadow-sm ring-1 ring-white/80`}
         >
-          {accent === "sage" ? "효" : "돈"}
+          {iconSrc ? (
+            <img src={iconSrc} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <>{accent === "sage" ? "효" : "돈"}</>
+          )}
         </span>
         <div>
           <p className="text-sm font-semibold leading-tight text-muted">{subtitle}</p>

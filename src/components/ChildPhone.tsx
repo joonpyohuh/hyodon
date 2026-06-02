@@ -71,11 +71,19 @@ export default function ChildPhone({
             </p>
           </div>
           <span
-            className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
+            className={`flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl ${
               state.cardFrozen ? "bg-rust/10 text-rust" : "bg-toss/10 text-toss"
             }`}
           >
-            <WalletCards size={25} strokeWidth={2.3} />
+            {state.cardFrozen ? (
+              <WalletCards size={25} strokeWidth={2.3} />
+            ) : (
+              <img
+                src="/hyodon-logo.png"
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            )}
           </span>
         </div>
       </section>

@@ -279,11 +279,16 @@ export default function SeniorPhone({
       <section className="relative mt-4 overflow-hidden rounded-[28px] bg-toss px-5 py-5 text-white shadow-[0_20px_42px_-18px_rgba(49,130,246,0.72)]">
         <span className="pointer-events-none absolute -right-8 -top-10 h-28 w-28 rounded-full bg-white/12" />
         <span className="pointer-events-none absolute bottom-4 right-6 h-16 w-16 rounded-full border border-white/18" />
-        <p className="text-[16px] font-bold text-white/75">안심지갑 잔액</p>
-        <p className="mt-2 text-[38px] font-black leading-none">
+        <img
+          src="/hyodon-logo.png"
+          alt=""
+          className="pointer-events-none absolute -right-1 top-3 h-20 w-20 rounded-[24px] object-cover opacity-20 mix-blend-screen"
+        />
+        <p className="relative text-[16px] font-bold text-white/75">안심지갑 잔액</p>
+        <p className="relative mt-2 text-[38px] font-black leading-none">
           {formatWon(state.balance)}
         </p>
-        <div className="mt-3 inline-flex rounded-full bg-white/15 px-3 py-1.5 text-[13px] font-black text-white/90">
+        <div className="relative mt-3 inline-flex rounded-full bg-white/15 px-3 py-1.5 text-[13px] font-black text-white/90">
           {state.cardFrozen
             ? "카드가 일시정지되어 있어요"
             : `${formatWon(state.threshold)} 이상은 가족이 함께 확인`}
